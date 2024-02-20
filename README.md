@@ -10,5 +10,3 @@
 - At root: ```npm run build```
 - ```serve -s -n build```
 - ```forever stopall; forever start ./backend/server.js```
-# chat-app-typescript-react
-# mariokartrecords
