@@ -1,35 +1,26 @@
-import { useEffect, useState } from "react";
-import socketIo from "socket.io-client";
-import { Socket } from "socket.io-client";
+import { Socket } from "socket.io-client"
+import { SocketHelper } from "../context/SocketHelper"
+import { 
+  useEffect, 
+  useState 
+} from "react"
 import {
   Route,
   Link,
 } from "react-router-dom";
 
-const ENDPOINT = window.location.host.indexOf("localhost") >= 0
-    ? "http://127.0.0.1:4000"
-    : window.location.host
-
 export default function MK8() {
+  const [unique, setUnique] = useState<any[]>()
 
-  const [unique, setUnique] = useState<any[]>();
-  const [socket, setSocket] = useState<Socket>();
-
-  useEffect(() => {
-    let socket = socketIo(ENDPOINT, { 
-      transports: ["websocket"] 
-    })
-    setSocket(socket)
-    socket.emit("setup")
-    return () => { 
-      socket.off() 
-    }
-  }, []);
+  // Socket.io setup
+  const [socket, setSocket] = useState<Socket>()
+  useEffect(() => { setSocket(SocketHelper.init()) }, [])
 
   useEffect(() => {
     if (!socket) {
       return
     }
+    socket.emit("setup")
     socket.on("sendMessage", (data: any) => {
       let u = []
       for (const d of data) {
@@ -40,7 +31,7 @@ export default function MK8() {
     return () => { 
       socket.off() 
     }
-  }, [socket]);
+  }, [socket])
 
   return (
     <div className=" h-full w-full text-black">
@@ -48,8 +39,8 @@ export default function MK8() {
         ? <div>Loading...</div> 
         : (
         <div>
-          <div className="mb-5">
-            Select a Mario Kart 8 race:
+          <div style={{ fontSize: "1.7rem" }} className="mb-5">
+            Races
           </div>
           {unique.map((x, i) =>
             <div>
@@ -61,5 +52,5 @@ export default function MK8() {
         </div>
       )}
     </div>
-  );
+  )
 }

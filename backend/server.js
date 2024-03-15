@@ -22,6 +22,9 @@ io.on("connection", (socket) => {
         console.log("Distinct... " + data)
         io.emit("sendMessage", data);
     })
+    socket.on("get_race_data", async () => {
+        console.log("Getting race data")
+    })
 })
 
 let home_path = app.settings['views'].substring(0, 5)

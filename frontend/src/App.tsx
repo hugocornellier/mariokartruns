@@ -1,5 +1,5 @@
 import MK8 from "./component/MK8"
-import RaceTitle from "./component/RaceTitle"
+import Race from "./component/Race"
 import Sidebar from "./Sidebar"
 import {
   createBrowserRouter,
@@ -25,7 +25,7 @@ export default function App() {
     {
       path: "/mk8/:race",
       element: ( 
-        <RaceTitle />
+        <Race />
       )
     }
   ])
@@ -33,7 +33,7 @@ export default function App() {
   return (
     <div className="flex flex-row h-full w-full text-white">
       <Sidebar />
-      <div className="pl-10 pt-5 w-full">
+      <div className="bcontent pl-10 pt-5 w-full">
         <RouterProvider router={router} />
       </div>
     </div>
