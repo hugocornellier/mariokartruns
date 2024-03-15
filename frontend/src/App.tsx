@@ -1,27 +1,41 @@
-import React from "react";
-import HomePage from "./component/HomePage";
+import MK8 from "./component/MK8"
+import RaceTitle from "./component/RaceTitle"
+import Sidebar from "./Sidebar"
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useParams
+} from "react-router-dom"
 
-function App() {
+export default function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: (
+        <div className="text-black">
+          <h1>Welcome to Mario Kart Records!</h1>
+        </div>
+      ),
+      
+    },
+    {
+      path: "/mk8",
+      element: ( <MK8 /> ),
+    },
+    {
+      path: "/mk8/:race",
+      element: ( 
+        <RaceTitle />
+      )
+    }
+  ])
+
   return (
     <div className="flex flex-row h-full w-full text-white">
-      <div className="pl-10 pt-5 h-screen" style={{minWidth: '300px', background: '#242222'}}>
-        <div>
-          Home
-        </div>
-        <div className="mt-10">
-          <b>
-            Games
-          </b>
-        </div>
-        <div className="mt-5">
-          Mario Kart 8
-        </div>
-      </div>
+      <Sidebar />
       <div className="pl-10 pt-5 w-full">
-        Welcome to MK Records!
+        <RouterProvider router={router} />
       </div>
     </div>
-  );
+  )
 }
-
-export default App;

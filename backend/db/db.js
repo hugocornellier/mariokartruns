@@ -80,7 +80,9 @@ module.exports = {
     getDistinctRaceNamesMK8: async function getDistinctRaceNamesMK8() {
         return new Promise((resolve, reject) => {
             db_conn.all(
-                `SELECT DISTINCT race FROM mk8 ORDER BY date DESC`,
+                `SELECT DISTINCT race 
+                FROM mk8 
+                ORDER BY date DESC`,
                 (err, rows) => {
                     if (err)
                         reject(err)

@@ -9,3 +9,12 @@
 ::-webkit-scrollbar-thumb {
   background: violet;
 }
+
+body {
+  font-family: sans-serif
+}
+
+span {
+  display: block;
+  margin-bottom: 20px;
+}
