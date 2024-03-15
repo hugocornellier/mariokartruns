@@ -1,11 +1,7 @@
-import {
-  Route,
-  Link,
-} from "react-router-dom";
 
 function Sidebar() {
   return (
-    <div className="pl-10 pt-5 h-screen text-white" style={{width: '300px', background: 'grey'}}>
+    <div className="pl-10 pt-5 h-screen text-white" style={{width: '300px', background: 'rgb(6, 33, 72)'}}>
     <div>
       <a href="/">
         Home

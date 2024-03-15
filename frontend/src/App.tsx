@@ -1,5 +1,6 @@
 import MK8 from "./component/MK8"
 import Race from "./component/Race"
+import Player from "./component/Player"
 import Sidebar from "./Sidebar"
 import {
   createBrowserRouter,
@@ -26,6 +27,12 @@ export default function App() {
       path: "/mk8/:race",
       element: ( 
         <Race />
+      )
+    },
+    {
+      path: "/mk8/player/:player",
+      element: (
+          <Player />
       )
     }
   ])

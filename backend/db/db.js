@@ -65,13 +65,47 @@ module.exports = {
     getAllEntries: async function getAllEntries() {
         return new Promise((resolve, reject) => {
             db_conn.all(
-                `SELECT * FROM mk8 ORDER BY date DESC`,
+                `SELECT * 
+                     FROM mk8 
+                     ORDER BY date DESC`,
                 (err, rows) => {
                     if (err)
                         reject(err)
                     else {
                         resolve(rows)
                     }
+                }
+            )
+        })
+    },
+
+    getAllEntriesByRace: async function getAllEntriesByRace(race) {
+        return new Promise((resolve, reject) => {
+            db_conn.all(
+                `SELECT * 
+                FROM mk8 
+                WHERE race = ?
+                ORDER BY time ASC`,
+                [race],
+                (err, rows) => {
+                    if (err) reject(err)
+                    else resolve(rows)
+                }
+            )
+        })
+    },
+
+    getAllEntriesByPlayer: async function getAllEntriesByPlayer(player) {
+        return new Promise((resolve, reject) => {
+            db_conn.all(
+                `SELECT * 
+                FROM mk8 
+                WHERE player = ?
+                ORDER BY date DESC`,
+                [player],
+                (err, rows) => {
+                    if (err) reject(err)
+                    else resolve(rows)
                 }
             )
         })

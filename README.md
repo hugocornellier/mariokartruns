@@ -1,4 +1,4 @@
-# Chat App - TypeScript + React + Socket.io
+# Mario Kart Records
 
 ## Dev:
 - ```npm i && npm i --prefix ./frontend```

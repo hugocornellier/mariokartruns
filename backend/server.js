@@ -19,11 +19,19 @@ io.on("connection", (socket) => {
     socket.on("setup", async () => {
         console.log("Hello !")
         data = await db.getDistinctRaceNamesMK8()
-        console.log("Distinct... " + data)
         io.emit("sendMessage", data);
     })
-    socket.on("get_race_data", async () => {
-        console.log("Getting race data")
+    socket.on("get_race_data", async (race) => {
+        console.log("Getting race data for: " + race)
+        let raceData = await db.getAllEntriesByRace(race)
+        console.log(raceData)
+        io.emit("get_race_data_ret", raceData);
+    })
+    socket.on("get_player_data", async (player) => {
+        console.log("Getting player data for: " + player)
+        let playerData = await db.getAllEntriesByPlayer(player)
+        console.log(playerData)
+        io.emit("get_player_data_ret", playerData);
     })
 })
 
