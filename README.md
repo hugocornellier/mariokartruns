@@ -1,5 +1,7 @@
 # Mario Kart Records
 
+A work-in-progress web app that displays Mario Kart world records for all games in the series.
+
 ## Dev:
 - ```npm i && npm i --prefix ./frontend```
 - ```npm start```

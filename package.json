@@ -1,5 +1,5 @@
 {
-  "name": "chat-app",
+  "name": "mariokartrecords",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -10,10 +10,10 @@
     "build": "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [
-    "mern",
-    "chat-app"
+    "mkrecords",
+    "mariokartrecords"
   ],
-  "author": "Sushil  Rawat",
+  "author": "Hugo Cornellier",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",

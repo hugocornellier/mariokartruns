@@ -1,7 +1,7 @@
 
 function Sidebar() {
   return (
-    <div className="pl-10 pt-5 h-screen text-white" style={{width: '300px', background: 'rgb(6, 33, 72)'}}>
+    <div className="pl-10 pt-5 text-white min-h-screen" style={{width: '300px', background: 'rgb(6, 33, 72)'}}>
     <div>
       <a href="/">
         Home
