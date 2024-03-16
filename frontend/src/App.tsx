@@ -17,7 +17,7 @@ export default function App() {
           <h1>Welcome to Mario Kart Records!</h1>
         </div>
       ),
-      
+
     },
     {
       path: "/mk8",
@@ -25,7 +25,7 @@ export default function App() {
     },
     {
       path: "/mk8/:race",
-      element: ( 
+      element: (
         <Race />
       )
     },
@@ -37,12 +37,22 @@ export default function App() {
     }
   ])
 
+  const goToHome = () => window.location.href = "/"
+
   return (
-    <div className="flex flex-row h-full w-full text-white">
-      <Sidebar />
-      <div className="bcontent pl-10 pt-5 w-full">
-        <RouterProvider router={router} />
+    <>
+      <div className="mkr-header items-center p-4 flex flex-row w-full text-white">
+        <div className={"flex flex-row items-center cursor-pointer"} onClick={goToHome}>
+          <img src={require('./img/logo.png')} className="logo mr-3" alt={"MarioKartRecords Logo"}/>
+          MarioKartRecords.io
+        </div>
       </div>
-    </div>
+      <div className="flex flex-row h-full w-full text-white">
+        <Sidebar />
+        <div className="bcontent p-7 w-full">
+          <RouterProvider router={router} />
+        </div>
+      </div>
+    </>
   )
 }

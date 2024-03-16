@@ -1,6 +1,5 @@
 .mkr-table-wrapper {
 	margin: 0;
-	padding: 20px;
 	background-color: #f3f3f3;
 	font-family: Futura, sans-serif;
 }
@@ -34,8 +33,6 @@
 .mkr-table-wrapper .table tbody tr:nth-child(even) {
 	background-color: #d1e8f5;
 }
-
-/*responsive*/
 
 @media (max-width: 768px) {
 	.mkr-table-wrapper .table thead {

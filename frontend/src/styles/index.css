@@ -24,3 +24,21 @@ span {
   display: block;
   margin-bottom: 20px;
 }
+
+.mkr-header {
+  background: rgb(5, 25, 52)
+}
+
+.mkr-header .logo {
+  height: 30px;
+}
+
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none;
+  }
+
+  .bcontent {
+    padding: 1.25rem;
+  }
+}
