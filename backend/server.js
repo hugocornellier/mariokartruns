@@ -23,6 +23,9 @@ io.on("connection", (socket) => {
     socket.on("get_player_data", async (player) => {
         io.emit("get_player_data_ret", await db.getAllEntriesByPlayer(player));
     })
+    socket.on("get_mk8_records", async () => {
+        io.emit("get_mk8_records_ret", await db.getMK8Records());
+    })
 })
 
 let home_path = app.settings['views'].substring(0, 5)
@@ -33,6 +36,8 @@ server.listen(
     async () => {
         return new Promise(async (resolve, reject) => {
             console.log(`Server running!`)
+            const records = await db.getMK8Records()
+            console.log(records)
             //for (var ru of await scraper.getRaceURLs()) {
             //    await scraper.getAndInsertRecordsMK8(ru)
             //}

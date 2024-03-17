@@ -1,7 +1,6 @@
 import { Socket } from "socket.io-client";
 import { SocketHelper } from "../context/SocketHelper";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import RaceTable from "./RaceTable";
 
 export default function MK8() {
@@ -24,28 +23,14 @@ export default function MK8() {
     }, [socket]);
 
     return (
-        <div className=" h-full w-full text-black">
+        <div className="h-full w-full text-black">
             {!unique ? (
-                <div>
+                <>
                     Loading...
-                </div>
+                </>
             ) : (
                 <>
-                    <div>
-                        <div style={{ fontSize: "1.7rem" }} className="mb-5">
-                            Races
-                        </div>
-                        {unique.map((x, i : number) => (
-                            <div key={i}>
-                                <Link to={"/mk8/" + x.replace(/ /g, "+")}>
-                                    {x}
-                                </Link>
-                            </div>
-                        ))}
-                    </div>
-                    <div>
-                        <RaceTable raceName={""} />
-                    </div>
+                    <RaceTable raceName={""} />
                 </>
             )}
         </div>

@@ -30,8 +30,12 @@
 	color: #656060;
 }
 
-.mkr-table-wrapper .table tbody tr:nth-child(even) {
-	background-color: #d1e8f5;
+.mkr-table-wrapper .table tbody tr:nth-child(odd) {
+	background-color: #e3e3e3;
+}
+
+.gold .table tbody tr:first-child {
+	background-color: #e8b92359;
 }
 
 @media (max-width: 768px) {

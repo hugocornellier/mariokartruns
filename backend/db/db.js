@@ -111,6 +111,30 @@ module.exports = {
         })
     },
 
+    getMK8Records: async function getMK8Records() {
+        return new Promise((resolve, reject) => {
+            db_conn.all(
+                `SELECT * 
+                FROM mk8 
+                ORDER BY race, time ASC`,
+                [],
+                (err, rows) => {
+                    if (err) reject(err)
+                    else {
+                        let tracks_seen = [], individual_records = []
+                        for (const record of rows) {
+                            if (!tracks_seen.includes(record.race)) {
+                                tracks_seen.push(record.race)
+                                individual_records.push(record)
+                            }
+                        }
+                        resolve(individual_records)
+                    }
+                }
+            )
+        })
+    },
+
     getDistinctRaceNamesMK8: async function getDistinctRaceNamesMK8() {
         return new Promise((resolve, reject) => {
             db_conn.all(

@@ -6,6 +6,7 @@
 
 body {
   font-family: "Poppins", sans-serif;
+  color: #9a8015;
 }
 
 .bcontent {
@@ -23,6 +24,10 @@ body {
 span {
   display: block;
   margin-bottom: 20px;
+}
+
+a:hover {
+  color: black
 }
 
 .mkr-header {
