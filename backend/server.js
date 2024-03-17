@@ -6,8 +6,6 @@ const path = require('path')
 const server = http.createServer(app)
 const io = socketIO(server)
 const db = require("./db/db")
-const scraper = require("./scrape/scrape_tools")
-const users = [{}];
 
 app.use(express.static(path.join(__dirname, "../frontend/build")))
 app.get("*", (req, res) => {
@@ -17,21 +15,13 @@ app.get("*", (req, res) => {
 io.on("connection", (socket) => {
     console.log("Connected to socket.io");
     socket.on("setup", async () => {
-        console.log("Hello !")
-        data = await db.getDistinctRaceNamesMK8()
-        io.emit("sendMessage", data);
+        io.emit("sendMessage", await db.getDistinctRaceNamesMK8());
     })
     socket.on("get_race_data", async (race) => {
-        console.log("Getting race data for: " + race)
-        let raceData = await db.getAllEntriesByRace(race)
-        console.log(raceData)
-        io.emit("get_race_data_ret", raceData);
+        io.emit("get_race_data_ret", await db.getAllEntriesByRace(race));
     })
     socket.on("get_player_data", async (player) => {
-        console.log("Getting player data for: " + player)
-        let playerData = await db.getAllEntriesByPlayer(player)
-        console.log(playerData)
-        io.emit("get_player_data_ret", playerData);
+        io.emit("get_player_data_ret", await db.getAllEntriesByPlayer(player));
     })
 })
 

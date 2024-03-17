@@ -15,6 +15,7 @@ export default function RaceTable(props: any) {
         if (!socket) return;
         socket.emit("get_race_data", props.raceName);
         socket.on("get_race_data_ret", (data: any) => {
+            console.log(data);
             setRaceData(data);
         });
         return () => {
@@ -29,6 +30,7 @@ export default function RaceTable(props: any) {
                 <th>Time</th>
                 <th>Player</th>
                 <th>Date</th>
+                <th>Shrooms</th>
                 <th>Country</th>
                 <th>Length</th>
                 </thead>
@@ -51,6 +53,9 @@ export default function RaceTable(props: any) {
                                 </td>
                                 <td data-label="Date">
                                     {record.date}
+                                </td>
+                                <td data-label="Shrooms">
+                                    {record.shrooms}
                                 </td>
                                 <td data-label="Country">
                                     {record.nation}

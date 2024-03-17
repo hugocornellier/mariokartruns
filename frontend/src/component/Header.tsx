@@ -1,5 +1,12 @@
-export default function Header() {
+import {useEffect} from "react";
+
+export default function Header(props: any) {
     const goToHome = () : string => window.location.href = "/"
+
+    useEffect(() => {
+        if (props.ref)
+            console.log(props.ref.current);
+    }, []);
 
     return (
         <div className="mkr-header items-center p-4 flex flex-row w-full text-white">

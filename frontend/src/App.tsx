@@ -1,52 +1,18 @@
-import MK8 from "./component/MK8"
-import Race from "./component/Race"
-import Player from "./component/Player"
-import Header from "./component/Header"
-import Sidebar from "./Sidebar"
-import {
-  createBrowserRouter,
-  RouterProvider,
-  useParams
-} from "react-router-dom"
+import Header from "./component/Header";
+import Sidebar from "./component/Sidebar";
+import {useRef} from "react";
+import Navigation from "./component/Navigation";
 
 export default function App() {
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: (
-        <div className="text-black">
-          <h1>Welcome to Mario Kart Records!</h1>
-        </div>
-      ),
+    const sidebar_ref = useRef(null);
 
-    },
-    {
-      path: "/mk8",
-      element: ( <MK8 /> ),
-    },
-    {
-      path: "/mk8/:race",
-      element: (
-        <Race />
-      )
-    },
-    {
-      path: "/mk8/player/:player",
-      element: (
-          <Player />
-      )
-    }
-  ])
-
-  return (
-    <>
-      <Header />
-      <div className="flex flex-row h-full w-full text-white">
-        <Sidebar />
-        <div className="bcontent p-7 w-full">
-          <RouterProvider router={router} />
-        </div>
-      </div>
-    </>
-  )
+    return (
+        <>
+            <Header ref={sidebar_ref} />
+            <div className="flex flex-row h-full w-full text-white">
+                <Sidebar ref={sidebar_ref} />
+                <Navigation />
+            </div>
+        </>
+    );
 }
