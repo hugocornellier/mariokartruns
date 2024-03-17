@@ -3,6 +3,7 @@ import {Util} from "../utils/Util";
 import {Socket} from "socket.io-client";
 import {SocketHelper} from "../context/SocketHelper";
 import {Link} from "react-router-dom";
+import RaceTable from "./RaceTable";
 
 export default function Player() {
     const [playerName, setPlayerName] = useState("")
@@ -25,38 +26,6 @@ export default function Player() {
     }, [socket]);
 
     return (
-        <div className={"text-black"}>
-            {playerName}'s records
-            <div>
-                {!playerData ? (
-                    <div>Loading...</div>
-                ) : (
-                    <div>
-                        {playerData.map((record, i) => (
-                            <div>
-                                <span className={"inline-block mr-5"}>
-                                    <Link key={i} to={ "/mk8/" + record.race.replace(/ /g, "+") }>
-                                        { record.race }
-                                    </Link>
-                                </span>
-                                <span className={"inline-block mr-5"}>
-                                    {record.video_url != 0 && record.video_url != "0" ?
-                                        <Link target="_blank" to={record.video_url}>
-                                            { record.time }
-                                        </Link> :
-                                        <>
-                                            { record.time }
-                                        </>
-                                    }
-                                </span>
-                                <span className={"inline-block mr-5"}>
-                                    { record.date }
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-        </div>
+        <RaceTable raceName={""} />
     )
 }

@@ -14,8 +14,8 @@ app.get("*", (req, res) => {
 
 io.on("connection", (socket) => {
     console.log("Connected to socket.io");
-    socket.on("setup", async () => {
-        io.emit("sendMessage", await db.getDistinctRaceNamesMK8());
+    socket.on("get_unique_mk8_races", async () => {
+        io.emit("get_unique_mk8_races_ret", await db.getDistinctRaceNamesMK8());
     })
     socket.on("get_race_data", async (race) => {
         io.emit("get_race_data_ret", await db.getAllEntriesByRace(race));

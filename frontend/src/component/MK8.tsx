@@ -1,28 +1,22 @@
 import { Socket } from "socket.io-client";
 import { SocketHelper } from "../context/SocketHelper";
 import { useEffect, useState } from "react";
-import { Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import RaceTable from "./RaceTable";
 
 export default function MK8() {
     const [unique, setUnique] = useState<any[]>();
-
-    // Socket.io setup
     const [socket, setSocket] = useState<Socket>();
+    useEffect((): void => setSocket(SocketHelper.init()), []);
     useEffect(() => {
-        setSocket(SocketHelper.init());
-    }, []);
-
-    useEffect(() => {
-        if (!socket) {
+        if (!socket)
             return;
-        }
-        socket.emit("setup");
-        socket.on("sendMessage", (data: any) => {
-            let u = [];
-            for (const d of data) {
-                u.push(d.race);
-            }
-            setUnique(u);
+        socket.emit("get_unique_mk8_races");
+        socket.on("get_unique_mk8_races_ret", (data: any) : void => {
+            let unique_races : any[] = [];
+            for (const race_data of data)
+                unique_races.push(race_data.race);
+            setUnique(unique_races);
         });
         return () => {
             socket.off();
@@ -32,20 +26,27 @@ export default function MK8() {
     return (
         <div className=" h-full w-full text-black">
             {!unique ? (
-                <div>Loading...</div>
-            ) : (
                 <div>
-                    <div style={{ fontSize: "1.7rem" }} className="mb-5">
-                        Races
-                    </div>
-                    {unique.map((x, i) => (
-                        <div>
-                            <Link key={i} to={"/mk8/" + x.replace(/ /g, "+")}>
-                                {x}
-                            </Link>
-                        </div>
-                    ))}
+                    Loading...
                 </div>
+            ) : (
+                <>
+                    <div>
+                        <div style={{ fontSize: "1.7rem" }} className="mb-5">
+                            Races
+                        </div>
+                        {unique.map((x, i : number) => (
+                            <div key={i}>
+                                <Link to={"/mk8/" + x.replace(/ /g, "+")}>
+                                    {x}
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
+                    <div>
+                        <RaceTable raceName={""} />
+                    </div>
+                </>
             )}
         </div>
     );
