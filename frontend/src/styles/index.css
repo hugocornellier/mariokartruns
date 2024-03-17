@@ -33,6 +33,16 @@ span {
   height: 30px;
 }
 
+.mkr-header .sidebar-btn {
+  border-color: #6865b6;
+  color: #9b99cc;
+}
+
+.mkr-header .sidebar-btn:hover {
+  border-color: #9b99cc;
+  color: #b9b8c9;
+}
+
 @media (max-width: 768px) {
   .hide-on-mobile {
     display: none;

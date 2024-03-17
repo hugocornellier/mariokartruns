@@ -1,6 +1,7 @@
 import { Socket } from "socket.io-client";
 import { SocketHelper } from "../context/SocketHelper";
 import { useEffect, useState } from "react";
+import {Link} from "react-router-dom";
 
 export default function RaceTable(props: any) {
     const [raceData, setRaceData] = useState<any[]>();
@@ -38,11 +39,25 @@ export default function RaceTable(props: any) {
                     <>
                         {raceData.map((record, i) => (
                             <tr>
-                                <td data-label="Time">{record.time}</td>
-                                <td data-label="Player">{record.player}</td>
-                                <td data-label="Date">{record.date}</td>
-                                <td data-label="Country">{record.nation}</td>
-                                <td data-label="Length">{record.days}</td>
+                                <td data-label="Time">
+                                    <Link className={"cursor-pointer"} to={record.video_url}>
+                                        {record.time}
+                                    </Link>
+                                </td>
+                                <td data-label="Player">
+                                    <Link className={"cursor-pointer"} to={"/mk8/player/" + record.player.replace(/ /g, "+")}>
+                                        {record.player}
+                                    </Link>
+                                </td>
+                                <td data-label="Date">
+                                    {record.date}
+                                </td>
+                                <td data-label="Country">
+                                    {record.nation}
+                                </td>
+                                <td data-label="Length">
+                                    {record.days}
+                                </td>
                             </tr>
                         ))}
                     </>
