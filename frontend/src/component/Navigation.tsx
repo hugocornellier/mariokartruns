@@ -1,6 +1,6 @@
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import MK8 from "./MK8";
-import Race from "./Race";
+import Race from "./Race/Race";
 import Player from "./Player";
 
 export default function Navigation() {

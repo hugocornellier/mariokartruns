@@ -1,7 +1,8 @@
 import { Socket } from "socket.io-client";
 import { SocketHelper } from "../context/SocketHelper";
 import { useEffect, useState } from "react";
-import RaceTable from "./RaceTable";
+import RaceTable from "./Race/RaceTable";
+import RaceTitle from "./Race/RaceTitle";
 
 export default function MK8() {
     const [unique, setUnique] = useState<any[]>();
@@ -30,6 +31,7 @@ export default function MK8() {
                 </>
             ) : (
                 <>
+                    <RaceTitle raceName={"Track List"} />
                     <RaceTable raceName={""} />
                 </>
             )}
