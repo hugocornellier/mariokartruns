@@ -13,7 +13,7 @@ app.get("*", (req, res) => {
 })
 
 io.on("connection", (socket) => {
-    console.log("Connected to socket.io");
+    console.log("Socket.io connection made successfully.");
     socket.on("get_unique_mk8_races", async () => {
         io.emit("get_unique_mk8_races_ret", await db.getDistinctRaceNamesMK8());
     })
@@ -21,7 +21,9 @@ io.on("connection", (socket) => {
         io.emit("get_race_data_ret", await db.getAllEntriesByRace(race));
     })
     socket.on("get_player_data", async (player) => {
-        io.emit("get_player_data_ret", await db.getAllEntriesByPlayer(player));
+        console.log(`Fetching data for (encoded): ${player}`)
+        console.log(`Fetching data for (decoded): ${decodeURI(player)}`)
+        io.emit("get_player_data_ret", await db.getAllEntriesByPlayer(decodeURI(player)));
     })
     socket.on("get_mk8_records", async () => {
         io.emit("get_mk8_records_ret", await db.getMK8Records());
@@ -36,8 +38,6 @@ server.listen(
     async () => {
         return new Promise(async (resolve, reject) => {
             console.log(`Server running!`)
-            const records = await db.getMK8Records()
-            console.log(records)
             //for (var ru of await scraper.getRaceURLs()) {
             //    await scraper.getAndInsertRecordsMK8(ru)
             //}

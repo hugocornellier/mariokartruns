@@ -6,7 +6,6 @@ import { Util } from "../utils/Util";
 import RaceTableHeader from "./RaceTableHeader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCrown as faMyIcon } from "@fortawesome/free-solid-svg-icons";
-import RaceTableRow from "./RaceTableRow";
 
 export default function RaceTable(props: any) {
     const [socket, setSocket] = useState<Socket>();
@@ -32,6 +31,7 @@ export default function RaceTable(props: any) {
                 "Length",
             ]);
         } else if (Util.pageDirIsPlayer()) {
+            console.log(`Fetching data for ${playerName}`)
             socket.emit("get_player_data", playerName);
             socket.on("get_player_data_ret", (data: any) => setRaceData(data));
             setTableLabelCol2("Race");
@@ -76,7 +76,7 @@ export default function RaceTable(props: any) {
                                                 {record.race}
                                             </Link>
                                         </td>
-                                        <RaceTableRow dataLabel="Record" content={record.time} />
+                                        <td data-label="Record">{record.time}</td>
                                         <td data-label="Player">{record.player}</td>
                                     </tr>
                                 ))
