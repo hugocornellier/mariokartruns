@@ -21,8 +21,6 @@ io.on("connection", (socket) => {
         io.emit("get_race_data_ret", await db.getAllEntriesByRace(race));
     })
     socket.on("get_player_data", async (player) => {
-        console.log(`Fetching data for (encoded): ${player}`)
-        console.log(`Fetching data for (decoded): ${decodeURI(player)}`)
         io.emit("get_player_data_ret", await db.getAllEntriesByPlayer(decodeURI(player)));
     })
     socket.on("get_mk8_records", async () => {

@@ -82,19 +82,15 @@ export default function RaceTable(props: any) {
                                 ))
                                 : raceData.map((record, i: number) => (
                                     <tr key={i}>
-                                        {Util.pageDirIsMK8() ? (
+                                        {Util.pageDirIsMK8() && (
                                             <td data-label="Crown">
-                                                {i === 0 ? (
+                                                {i === 0 && (
                                                     <FontAwesomeIcon
                                                         color={"#9a8015"}
                                                         icon={faMyIcon}
                                                     />
-                                                ) : (
-                                                    ""
                                                 )}
                                             </td>
-                                        ) : (
-                                            ""
                                         )}
                                         <td data-label="Time">
                                             {record.video_url != 0 ? (
