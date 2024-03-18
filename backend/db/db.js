@@ -101,7 +101,7 @@ module.exports = {
                 `SELECT * 
                 FROM mk8 
                 WHERE player = ?
-                ORDER BY date DESC`,
+                ORDER BY date DESC, time ASC`,
                 [player],
                 (err, rows) => {
                     if (err) reject(err)

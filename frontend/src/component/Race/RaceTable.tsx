@@ -31,9 +31,24 @@ export default function RaceTable(props: any) {
         } else if (Util.pageDirIsPlayer()) {
             console.log(`Fetching data for ${playerName}`)
             socket.emit("get_player_data", playerName);
-            socket.on("get_player_data_ret", (data: any) => setRaceData(data));
+            socket.on("get_player_data_ret", (data: any, records: any) => {
+                for (const wr of data) {
+                    wr.active_wr = false
+                }
+                for (const wr of data) {
+                    for (const record of records) {
+                        if (wr.video_url === record.video_url) {
+                            wr.active_wr = true
+                            console.log(wr)
+                        }
+                    }
+                }
+                setRaceData(data);
+                console.log(data)
+            });
             setTableLabelCol2("Race");
             setLabels([
+                "",
                 "Time",
                 "Race",
                 "Character",
@@ -56,16 +71,14 @@ export default function RaceTable(props: any) {
 
     return (
         <div className={(Util.pageDirIsMK8() ? "gold" : "") + " mkr-table-wrapper"}>
-            <table className="table">
-                {!raceData ? (
-                    <div>Loading...</div>
-                ) : (
-                    <>
-                        <RaceTableHeader labels={labels} />
-                        <RaceTableBody raceData={raceData} isTrackList={isTrackList} tableLabelCol2={tableLabelCol2} />
-                    </>
-                )}
-            </table>
+            {!raceData ? (
+                <div>Loading...</div>
+            ) : (
+                <table className="table">
+                    <RaceTableHeader labels={labels} />
+                    <RaceTableBody raceData={raceData} isTrackList={isTrackList} tableLabelCol2={tableLabelCol2} />
+                </table>
+            )}
         </div>
     );
 }

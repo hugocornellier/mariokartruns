@@ -34,8 +34,12 @@
 	background-color: #e3e3e3;
 }
 
-.gold .table tbody tr:first-child {
-	background-color: #e8b92359;
+.mkr-table-wrapper a:hover {
+	color: black
+}
+
+.gold .table tbody tr:first-child, .gold-tr {
+	background-color: #e8b92359 !important;
 }
 
 @media (max-width: 768px) {

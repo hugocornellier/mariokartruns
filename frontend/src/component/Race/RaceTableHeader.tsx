@@ -2,6 +2,7 @@ export default function RaceTableHeader(props: any) {
     return (
         <>
             <thead>
+                <tr>
                 {props.labels.map(
                     (record: {
                         toString: () => string | null },
@@ -12,6 +13,7 @@ export default function RaceTableHeader(props: any) {
                         </th>
                     )
                 )}
+                </tr>
             </thead>
         </>
     )

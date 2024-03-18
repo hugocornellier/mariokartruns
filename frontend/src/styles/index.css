@@ -13,6 +13,10 @@ body {
   background: #f2f6f9;
 }
 
+a:hover {
+  color: white;
+}
+
 ::-webkit-scrollbar {
   width: 2px;
 }
@@ -24,10 +28,6 @@ body {
 span {
   display: block;
   margin-bottom: 20px;
-}
-
-a:hover {
-  color: black
 }
 
 .mkr-header {

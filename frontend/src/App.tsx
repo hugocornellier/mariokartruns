@@ -1,16 +1,17 @@
 import Header from "./component/Header";
 import Sidebar from "./component/Sidebar";
-import {useRef} from "react";
+import { useState } from "react";
 import Navigation from "./component/Navigation";
 
 export default function App() {
-    const sidebar_ref = useRef(null);
+    const [activeSidebar, setActiveSidebar] = useState(true);
+    const onToggleSidebar = () => setActiveSidebar(!activeSidebar)
 
     return (
         <>
-            <Header ref={sidebar_ref} />
-            <div className="flex flex-row h-full w-full text-white">
-                <Sidebar ref={sidebar_ref} />
+            <Header sidebarOnClick={onToggleSidebar} />
+            <div className="flex flex-row h-full w-full">
+                <Sidebar isActive={activeSidebar}  children={""}/>
                 <Navigation />
             </div>
         </>

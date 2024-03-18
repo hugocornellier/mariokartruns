@@ -6,7 +6,7 @@ import {Util} from "../utils/Util";
 export default function Player() {
     const [playerName, sePlayerName] = useState("");
     useEffect(() => {
-        sePlayerName(Util.getPageLocation());
+        sePlayerName(decodeURI(Util.getPageLocation()));
     }, []);
 
     return (

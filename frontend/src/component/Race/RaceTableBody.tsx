@@ -9,6 +9,7 @@ export default function RaceTableBody(props: any) {
             <tbody>
             {props.raceData.map((record: {
                 days: any;
+                active_wr: boolean;
                 date: string;
                 nation: string;
                 shrooms: string;
@@ -30,20 +31,25 @@ export default function RaceTableBody(props: any) {
                                 </Link>
                             </td>
                             <td data-label="Record">{record.time}</td>
-                            <td data-label="Player">{record.player}</td>
+                            <td data-label="Player">
+                                <Link
+                                    className={"cursor-pointer"}
+                                    to={"/mk8/player/" + record.player.replace(/ /g, "+")}
+                                >
+                                    {record.player}
+                                </Link>
+                            </td>
                         </tr>
                     ) : (
-                        <tr key={i}>
-                            {Util.pageDirIsMK8() && (
-                                <td data-label="Crown">
-                                    {i === 0 && (
-                                        <FontAwesomeIcon color={"#9a8015"} icon={faCrown}/>
-                                    )}
-                                    {record.video_url !== 0 && (
-                                        <FontAwesomeIcon className={"ml-1.5"} icon={faVideoCamera}/>
-                                    )}
-                                </td>
-                            )}
+                        <tr key={i} className={(((Util.pageDirIsMK8() && i === 0) || record.active_wr) ? "gold-tr" : "")}>
+                            <td data-label="Crown">
+                                {((Util.pageDirIsMK8() && i === 0) || record.active_wr) && (
+                                    <FontAwesomeIcon color={"#9a8015"} icon={faCrown}/>
+                                )}
+                                {record.video_url !== 0 && (
+                                    <FontAwesomeIcon className={"ml-1.5"} icon={faVideoCamera}/>
+                                )}
+                            </td>
                             <td data-label="Time">
                                 {record.video_url !== 0 ? (
                                     <Link
