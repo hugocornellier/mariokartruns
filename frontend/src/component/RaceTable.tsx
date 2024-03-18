@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Util } from "../utils/Util";
 import RaceTableHeader from "./RaceTableHeader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCrown as faMyIcon } from "@fortawesome/free-solid-svg-icons";
+import { faCrown, faVideoCamera } from "@fortawesome/free-solid-svg-icons";
 
 export default function RaceTable(props: any) {
     const [socket, setSocket] = useState<Socket>();
@@ -85,10 +85,10 @@ export default function RaceTable(props: any) {
                                         {Util.pageDirIsMK8() && (
                                             <td data-label="Crown">
                                                 {i === 0 && (
-                                                    <FontAwesomeIcon
-                                                        color={"#9a8015"}
-                                                        icon={faMyIcon}
-                                                    />
+                                                    <FontAwesomeIcon color={"#9a8015"} icon={faCrown} />
+                                                )}
+                                                {record.video_url != 0 && (
+                                                    <FontAwesomeIcon className={"ml-1.5"} icon={faVideoCamera} />
                                                 )}
                                             </td>
                                         )}
