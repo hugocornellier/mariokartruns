@@ -1,5 +1,5 @@
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
-import MK8 from "./MK8";
+import GamePage from "./GamePage";
 import Race from "./Race/Race";
 import Player from "./Player";
 
@@ -15,7 +15,11 @@ export default function Navigation() {
         },
         {
             path: "/mk8",
-            element: <MK8 />,
+            element: <GamePage game={"mk8"} />,
+        },
+        {
+            path: "/mk8dx",
+            element: <GamePage game={"mk8dx"} />,
         },
         {
             path: "/mk8/:race",

@@ -30,6 +30,14 @@ span {
   margin-bottom: 20px;
 }
 
+.race-title .game-id.mk8 {
+  background: #d6eeb9
+}
+
+.race-title .game-id.mk8dx {
+  background: #b9eee0
+}
+
 .sidebar div {
   padding: 10px 20px
 }

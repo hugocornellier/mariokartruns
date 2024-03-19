@@ -1,11 +1,10 @@
 export module Util {
-
-    export const goToHome = () : void => {
-        window.location.replace("/")
-    }
-
     export const goToPage = (page: string) : void => {
         window.location.replace(page)
+    }
+
+    export const goToHome = () : void => {
+        goToPage("/")
     }
 
     export const getPageLocation = () : string => {
