@@ -28,7 +28,8 @@ export default function RaceTable(props: any) {
                 "Date",
                 "Length",
             ]);
-        } else if (Util.pageDirIsPlayer()) {
+        }
+        else if (Util.pageDirIsPlayer()) {
             console.log(`Fetching data for ${playerName}`)
             socket.emit("get_player_data", playerName);
             socket.on("get_player_data_ret", (data: any, records: any) => {
@@ -57,9 +58,16 @@ export default function RaceTable(props: any) {
                 "Date",
                 "Length",
             ]);
-        } else if (Util.onMK8RaceList()) {
+        }
+        else if (Util.onMK8RaceList()) {
             socket.emit("get_mk8_records");
             socket.on("get_mk8_records_ret", (data: any) => setRaceData(data));
+            setIsTrackList(true);
+            setLabels(["Track", "Record", "Player"]);
+        }
+        else if (Util.onMK8DXRaceList()) {
+            socket.emit("get_mk8dx_records");
+            socket.on("get_mk8dx_records_ret", (data: any) => setRaceData(data));
             setIsTrackList(true);
             setLabels(["Track", "Record", "Player"]);
         }

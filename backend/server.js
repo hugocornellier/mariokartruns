@@ -6,6 +6,7 @@ const path = require('path')
 const server = http.createServer(app)
 const io = socketIO(server)
 const db = require("./db/db")
+const scraper = require("./scrape/scrape_tools")
 
 app.use(express.static(path.join(__dirname, "../frontend/build")))
 app.get("*", (req, res) => {
@@ -14,17 +15,17 @@ app.get("*", (req, res) => {
 
 io.on("connection", (socket) => {
     console.log("Socket.io connection made successfully.");
-    socket.on("get_unique_mk8_races", async () => {
-        io.emit("get_unique_mk8_races_ret", await db.getDistinctRaceNamesMK8());
-    })
     socket.on("get_race_data", async (race) => {
         io.emit("get_race_data_ret", await db.getAllEntriesByRace(race));
     })
     socket.on("get_player_data", async (player) => {
-        io.emit("get_player_data_ret", await db.getAllEntriesByPlayer(decodeURI(player)), await db.getMK8Records());
+        io.emit("get_player_data_ret", await db.getAllEntriesByPlayer(decodeURI(player)), await db.getRecords());
     })
     socket.on("get_mk8_records", async () => {
-        io.emit("get_mk8_records_ret", await db.getMK8Records());
+        io.emit("get_mk8_records_ret", await db.getRecords('mk8'));
+    })
+    socket.on("get_mk8dx_records", async () => {
+        io.emit("get_mk8dx_records_ret", await db.getRecords('mk8dx'));
     })
 })
 
@@ -34,10 +35,12 @@ server.listen(
         ? 4000
         : 5000,
     async () => {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             console.log(`Server running!`)
-            //for (var ru of await scraper.getRaceURLs()) {
-            //    await scraper.getAndInsertRecordsMK8(ru)
+            //await db.deleteTable('mk8dx')
+            //const game = 'mk8dx'
+            //for (var url of await scraper.getRaceURLs(game)) {
+            //    await scraper.getAndInsertRecords(url, game)
             //}
             resolve()
         })

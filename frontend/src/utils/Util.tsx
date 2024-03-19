@@ -24,7 +24,11 @@ export module Util {
     }
 
     export const onMK8RaceList = () : boolean => {
-        return window.location.pathname === "/mk8"
+        return pathIs("/mk8")
+    }
+
+    export const onMK8DXRaceList = () : boolean => {
+        return pathIs("/mk8dx")
     }
 }
 
@@ -35,4 +39,8 @@ const getPageData = (dirLevel: number) : string => {
 
 const pageDirIs = (dir: string) : boolean => {
     return Util.getPageDir() === dir
+}
+
+export const pathIs = (path: string) : boolean => {
+    return window.location.pathname === path
 }

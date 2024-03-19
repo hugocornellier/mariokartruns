@@ -3,7 +3,7 @@ const parser = require("node-html-parser");
 const db = require("../db/db");
 
 
-function formatDate(date) {
+const formatDate = date => {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
@@ -13,7 +13,12 @@ function formatDate(date) {
     if (day.length < 2)
         day = '0' + day;
     return [year, month, day].join('-');
-}
+};
+
+const removeYouTubeLinksFromArray = a => a.filter(i => !i.includes("youtube.com/") && !i.includes("youtu.be/"));
+const removeDuplicatesFromArray = arr => {
+    return arr.filter((value, index) => arr.indexOf(value) === index);
+};
 
 async function fetchHTML(url) {
     return new Promise(async (resolve, reject) => {
@@ -29,12 +34,13 @@ async function fetchHTML(url) {
     })
 }
 
-async function getRaceRecordsMK8(race_url) {
+async function getRaceRecords(race_url, game) {
     return new Promise(async (resolve, reject) => {
         rows = []
         const html = await fetchHTML(race_url)
         if (!html)
             reject("Error getting HTML.")
+        const cc = race_url.slice(-5) === "m=200" ? "200cc" : "150cc"
         const table = (parser.parse(html).querySelectorAll('table'))[2]
         atFirstRow = true
         for (var r of table.querySelectorAll('tr')) {
@@ -55,6 +61,7 @@ async function getRaceRecordsMK8(race_url) {
                     row['tires'] = (cell_count === 12) ? c.textContent.trim() : row['tires']
                     row['glider'] = (cell_count === 13) ? c.textContent.trim() : row['glider']
                     row['race'] = parser.parse(html).querySelectorAll('h2')[0].textContent
+                    row['cc'] = cc
                     if (cell_count === 1) {
                         el = parser.parse(c.innerHTML)
                         a_el = el.querySelector('a')
@@ -84,22 +91,25 @@ async function getRaceRecordsMK8(race_url) {
 }
 
 module.exports = {
-    getAndInsertRecordsMK8: async function getAndInsertRecordsMK8(race_url) {
+    getAndInsertRecords: async function getAndInsertRecords(race_url, table) {
         return new Promise(async (resolve, reject) => {
             console.log("Fetching records at URL: " + race_url)
             try {
-                rows = await getRaceRecordsMK8(race_url)
+                rows = await getRaceRecords(race_url, table)
+                tableExists = await db.checkIfTableExists(table)
             } catch (err) {
                 reject(err)
             }
-            console.log(rows)
+            if (!tableExists) {
+                db.createTable(table)
+            }
             for (const row of rows) {
                 try {
                     await db.insertEntry(row['date'], row['player'], row['days'], row['lap1'], row['lap2'], row['lap3'],
                         row['coins'], row['shrooms'], row['character'], row['kart'], row['tires'], row['glider'],
-                        row['time'], row['video_url'], row['controller'], row['nation'], row['race'])
+                        row['time'], row['video_url'], row['controller'], row['nation'], row['race'], row['cc'], table)
                 } catch (e) {
-                    console.log("Error caught! " + e)
+
                 }
             }
             console.log("Done inserting...")
@@ -107,10 +117,10 @@ module.exports = {
         })
     },
 
-    getRaceURLs: async function getRaceURLs() {
+    getRaceURLs: async function getRaceURLs(game) {
         return new Promise(async (resolve, reject) => {
             race_urls = []
-            base_url = "https://mkwrs.com/mk8/"
+            base_url = `https://mkwrs.com/${game}/`
             const html = await fetchHTML(base_url)
             if (!html)
                 reject("Error getting HTML.")
@@ -127,7 +137,10 @@ module.exports = {
                     }
                 }
             }
-            resolve(race_urls)
+            if (!Array.isArray(race_urls)) {
+                reject("Not array")
+            }
+            resolve(removeYouTubeLinksFromArray(removeDuplicatesFromArray(race_urls)))
         })
     }
 }

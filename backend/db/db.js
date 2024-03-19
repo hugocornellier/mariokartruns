@@ -1,19 +1,52 @@
 const db_conn = require("./db_conn")
 
 module.exports = {
+
+    createTable: function createTable(tableName) {
+        db_conn.exec(`
+            CREATE TABLE ${tableName} (
+                date VARCHAR(50) NOT NULL,
+                player VARCHAR(50) NOT NULL,
+                days VARCHAR(50) NOT NULL,
+                lap1 VARCHAR(50) NOT NULL,
+                lap2 VARCHAR(50) NOT NULL,
+                lap3 VARCHAR(50) NOT NULL,
+                coins VARCHAR(50) NOT NULL,
+                shrooms VARCHAR(50) NOT NULL,
+                character VARCHAR(250) NOT NULL,
+                kart VARCHAR(250) NOT NULL,
+                tires VARCHAR(250) NOT NULL,
+                glider VARCHAR(250) NOT NULL,
+                time VARCHAR(250) NOT NULL,
+                video_url VARCHAR(250) NOT NULL,
+                controller VARCHAR(250) NOT NULL,
+                nation VARCHAR(250) NOT NULL,
+                race VARCHAR(250) NOT NULL
+                ${tableName === "mk8dx" ? ", cc VARCHAR(50)" : ""}
+            )
+        `)
+    },
+
+    deleteTable: async function deleteTable(table) {
+        if (await this.checkIfTableExists(table)) {
+            db_conn.exec(`
+                DROP TABLE ${table}
+            `)
+        }
+    },
+
     insertEntry: async function insertEntry(date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart,
-                                            tires, glider, time, video_url, controller, nation, race) {
+                                            tires, glider, time, video_url, controller, nation, race, cc, table) {
         return new Promise(async (resolve, reject) => {
-            console.log("Attempting to insert entry...")
             const existingEntry = await this.getEntry(date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart,
-                tires, glider, time, video_url, controller, nation, race)
+                tires, glider, time, video_url, controller, nation, race, cc, table)
             if (existingEntry.length === 0) {
                 db_conn.run(
-                    `INSERT INTO mk8 (date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart, 
-                                                   tires, glider, time, video_url, controller, nation, race) 
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    `INSERT INTO ${table} (date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart, 
+                                                   tires, glider, time, video_url, controller, nation, race, cc) 
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart, tires, glider, time,
-                        video_url, controller, nation, race],
+                        video_url, controller, nation, race, cc],
                     (err) => {
                         if (err)
                             reject(err)
@@ -30,11 +63,11 @@ module.exports = {
     },
 
     getEntry: async function getEntry(date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart,
-                                      tires, glider, time, video_url, controller, nation, race) {
+                                      tires, glider, time, video_url, controller, nation, race, cc, table) {
         return new Promise((resolve, reject) => {
             db_conn.all(
                 `SELECT * 
-                FROM mk8 
+                FROM ${table} 
                 WHERE date = ? 
                 AND player = ? 
                 AND days = ? 
@@ -51,9 +84,10 @@ module.exports = {
                 AND video_url = ? 
                 AND controller = ? 
                 AND nation = ? 
-                AND race = ?`,
+                AND race = ? 
+                AND cc = ?`,
                 [date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart,
-                    tires, glider, time, video_url, controller, nation, race],
+                    tires, glider, time, video_url, controller, nation, race, cc],
                 (err, rows) => {
                     if (err) reject(err)
                     else resolve(rows)
@@ -62,17 +96,19 @@ module.exports = {
         })
     },
 
-    getAllEntries: async function getAllEntries() {
+    checkIfTableExists: async function checkIfTableExists(tableName) {
         return new Promise((resolve, reject) => {
             db_conn.all(
-                `SELECT * 
-                     FROM mk8 
-                     ORDER BY date DESC`,
+                `SELECT name FROM sqlite_master WHERE type='table' AND name='${tableName}';`,
                 (err, rows) => {
                     if (err)
                         reject(err)
                     else {
-                        resolve(rows)
+                        if (rows.length > 0)
+                            resolve(true)
+                        else {
+                            resolve(false)
+                        }
                     }
                 }
             )
@@ -111,15 +147,15 @@ module.exports = {
         })
     },
 
-    getMK8Records: async function getMK8Records() {
+    getRecords: async function getRecords(table) {
         return new Promise((resolve, reject) => {
             db_conn.all(
                 `SELECT * 
-                FROM mk8 
+                FROM ${table} 
                 ORDER BY race, time ASC`,
-                [],
-                (err, rows) => {
-                    if (err) reject(err)
+                [], (err, rows) => {
+                    if (err)
+                        reject(err)
                     else {
                         let tracks_seen = [], individual_records = []
                         for (const record of rows) {
@@ -129,23 +165,6 @@ module.exports = {
                             }
                         }
                         resolve(individual_records)
-                    }
-                }
-            )
-        })
-    },
-
-    getDistinctRaceNamesMK8: async function getDistinctRaceNamesMK8() {
-        return new Promise((resolve, reject) => {
-            db_conn.all(
-                `SELECT DISTINCT race 
-                FROM mk8 
-                ORDER BY date DESC`,
-                (err, rows) => {
-                    if (err)
-                        reject(err)
-                    else {
-                        resolve(rows)
                     }
                 }
             )
