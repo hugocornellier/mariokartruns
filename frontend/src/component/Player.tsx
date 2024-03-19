@@ -3,16 +3,11 @@ import RaceTitle from "./Race/RaceTitle";
 import {useEffect, useState} from "react";
 import {Util} from "../utils/Util";
 
-export default function Player() {
-    const [playerName, sePlayerName] = useState("");
-    useEffect(() => {
-        sePlayerName(decodeURI(Util.getPageLocation()));
-    }, []);
-
+export default function Player(props: any) {
     return (
         <>
-            <RaceTitle raceName={playerName} />
-            <RaceTable raceName={""} />
+            <RaceTitle game={props.game} raceName={decodeURI(Util.getPageLocation())} />
+            <RaceTable game={props.game} raceName={""} />
         </>
     )
 }
