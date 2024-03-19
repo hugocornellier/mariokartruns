@@ -29,6 +29,14 @@ export default function Navigation() {
             path: "/mk8dx",
             element: <GamePage game={"mk8dx"} />,
         },
+        {
+            path: "/mk8dx/:race",
+            element: <Race game={"mk8dx"} />,
+        },
+        {
+            path: "/mk8dx/player/:player",
+            element: <Player game={"mk8dx"} />,
+        },
     ]);
 
     return (

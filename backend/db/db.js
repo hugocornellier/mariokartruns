@@ -115,11 +115,11 @@ module.exports = {
         })
     },
 
-    getAllEntriesByRace: async function getAllEntriesByRace(race) {
+    getAllEntriesByRace: async function getAllEntriesByRace(race, table) {
         return new Promise((resolve, reject) => {
             db_conn.all(
                 `SELECT * 
-                FROM mk8 
+                FROM ${table} 
                 WHERE race = ?
                 ORDER BY time ASC`,
                 [race],
@@ -131,11 +131,11 @@ module.exports = {
         })
     },
 
-    getAllEntriesByPlayer: async function getAllEntriesByPlayer(player) {
+    getAllEntriesByPlayer: async function getAllEntriesByPlayer(player, table) {
         return new Promise((resolve, reject) => {
             db_conn.all(
                 `SELECT * 
-                FROM mk8 
+                FROM ${table} 
                 WHERE player = ?
                 ORDER BY date DESC, time ASC`,
                 [player],

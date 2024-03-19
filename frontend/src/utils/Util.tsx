@@ -19,6 +19,10 @@ export module Util {
         return pageDirIs('mk8')
     }
 
+    export const pageDirIsMK8DX = () : boolean => {
+        return pageDirIs('mk8dx')
+    }
+
     export const pageDirIsPlayer = () : boolean => {
         return pageDirIs('player')
     }

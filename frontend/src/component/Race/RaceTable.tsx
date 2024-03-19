@@ -15,8 +15,8 @@ export default function RaceTable(props: any) {
     useEffect(() => {
         const playerName: string = Util.getPageLocation();
         if (!socket || playerName.length === 0) return;
-        if (Util.pageDirIsMK8()) {
-            socket.emit("get_race_data", props.raceName);
+        if (Util.pageDirIsMK8() || Util.pageDirIsMK8DX()) {
+            socket.emit("get_race_data", props.raceName, props.game);
             socket.on("get_race_data_ret", (data: any) => setRaceData(data));
             setLabels([
                 "",
@@ -31,7 +31,7 @@ export default function RaceTable(props: any) {
         }
         else if (Util.pageDirIsPlayer()) {
             console.log(`Fetching data for ${playerName}`)
-            socket.emit("get_player_data", playerName);
+            socket.emit("get_player_data", playerName, props.game);
             socket.on("get_player_data_ret", (data: any, records: any) => {
                 for (const wr of data) {
                     wr.active_wr = false
@@ -84,7 +84,7 @@ export default function RaceTable(props: any) {
             ) : (
                 <table className="table">
                     <RaceTableHeader labels={labels} />
-                    <RaceTableBody raceData={raceData} isTrackList={isTrackList} tableLabelCol2={tableLabelCol2} />
+                    <RaceTableBody game={props.game} raceData={raceData} isTrackList={isTrackList} tableLabelCol2={tableLabelCol2} />
                 </table>
             )}
         </div>

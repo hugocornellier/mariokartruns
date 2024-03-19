@@ -15,11 +15,12 @@ app.get("*", (req, res) => {
 
 io.on("connection", (socket) => {
     console.log("Socket.io connection made successfully.");
-    socket.on("get_race_data", async (race) => {
-        io.emit("get_race_data_ret", await db.getAllEntriesByRace(race));
+    socket.on("get_race_data", async (race, game) => {
+        console.log("Getting race data...")
+        io.emit("get_race_data_ret", await db.getAllEntriesByRace(race, game));
     })
-    socket.on("get_player_data", async (player) => {
-        io.emit("get_player_data_ret", await db.getAllEntriesByPlayer(decodeURI(player)), await db.getRecords());
+    socket.on("get_player_data", async (player, game) => {
+        io.emit("get_player_data_ret", await db.getAllEntriesByPlayer(decodeURI(player), game), await db.getRecords(game));
     })
     socket.on("get_mk8_records", async () => {
         io.emit("get_mk8_records_ret", await db.getRecords('mk8'));

@@ -2,8 +2,15 @@ import {Link} from "react-router-dom";
 import {Util} from "../../utils/Util";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCrown, faVideoCamera} from "@fortawesome/free-solid-svg-icons";
+import {useEffect} from "react";
+import {SocketHelper} from "../../context/SocketHelper";
 
 export default function RaceTableBody(props: any) {
+    useEffect((): void => {
+        for (const record of props.raceData) {
+            console.log(record)
+        }
+    }, []);
     return (
         <>
             <tbody>
@@ -25,7 +32,7 @@ export default function RaceTableBody(props: any) {
                             <td data-label="Race">
                                 <Link
                                     className={"cursor-pointer"}
-                                    to={"/mk8/" + record.race.replace(/ /g, "+")}
+                                    to={`/${props.game}/` + record.race.replace(/ /g, "+")}
                                 >
                                     {record.race}
                                 </Link>
@@ -34,7 +41,7 @@ export default function RaceTableBody(props: any) {
                             <td data-label="Player">
                                 <Link
                                     className={"cursor-pointer"}
-                                    to={"/mk8/player/" + record.player.replace(/ /g, "+")}
+                                    to={`/${props.game}/player/` + record.player.replace(/ /g, "+")}
                                 >
                                     {record.player}
                                 </Link>
@@ -46,12 +53,12 @@ export default function RaceTableBody(props: any) {
                                 {((Util.pageDirIsMK8() && i === 0) || record.active_wr) && (
                                     <FontAwesomeIcon color={"#9a8015"} icon={faCrown}/>
                                 )}
-                                {record.video_url !== 0 && (
+                                {record.video_url !== "0" && (
                                     <FontAwesomeIcon className={"ml-1.5"} icon={faVideoCamera}/>
                                 )}
                             </td>
                             <td data-label="Time">
-                                {record.video_url !== 0 ? (
+                                {record.video_url !== "0" ? (
                                     <Link
                                         target={"_blank"}
                                         className={"cursor-pointer"}
@@ -69,9 +76,9 @@ export default function RaceTableBody(props: any) {
                                         className={"cursor-pointer"}
                                         to={
                                             props.tableLabelCol2 === "Player"
-                                                ? "/mk8/player/" +
+                                                ? `/${props.game}/player/` +
                                                 record.player.replace(/ /g, "+")
-                                                : "/mk8/" + record.race.replace(/ /g, "+")
+                                                : `/${props.game}/` + record.race.replace(/ /g, "+")
                                         }
                                     >
                                         {props.tableLabelCol2 === "Player"
