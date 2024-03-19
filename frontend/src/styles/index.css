@@ -30,8 +30,22 @@ span {
   margin-bottom: 20px;
 }
 
+.sidebar div {
+  padding: 10px 20px
+}
+
+.sidebar .header {
+  padding-top: 25px
+}
+
+.sidebar .link:hover {
+  background: rgba(9, 52, 115, 0.45);
+  cursor: pointer
+}
+
 .mkr-header {
-  background: rgb(5, 25, 52)
+  background: rgb(16, 45, 83);
+  border-bottom: 1px solid rgb(102, 140, 191);
 }
 
 .mkr-header .logo {

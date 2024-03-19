@@ -1,4 +1,13 @@
 export module Util {
+
+    export const goToHome = () : void => {
+        window.location.replace("/")
+    }
+
+    export const goToPage = (page: string) : void => {
+        window.location.replace(page)
+    }
+
     export const getPageLocation = () : string => {
         return getPageData(1)
     }
