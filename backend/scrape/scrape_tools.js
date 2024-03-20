@@ -34,7 +34,7 @@ async function fetchHTML(url) {
     })
 }
 
-async function getRaceRecords(race_url, game) {
+async function getRaceRecords(race_url, game, race_id) {
     return new Promise(async (resolve, reject) => {
         rows = []
         const html = await fetchHTML(race_url)
@@ -61,6 +61,7 @@ async function getRaceRecords(race_url, game) {
                     row['tires'] = (cell_count === 12) ? c.textContent.trim() : row['tires']
                     row['glider'] = (cell_count === 13) ? c.textContent.trim() : row['glider']
                     row['race'] = parser.parse(html).querySelectorAll('h2')[0].textContent
+                    row['race_id'] = race_id
                     row['cc'] = cc
                     if (cell_count === 1) {
                         el = parser.parse(c.innerHTML)
@@ -91,23 +92,25 @@ async function getRaceRecords(race_url, game) {
 }
 
 module.exports = {
-    getAndInsertRecords: async function getAndInsertRecords(race_url, table) {
+    getAndInsertRecords: async function getAndInsertRecords(race_url, table, race_id) {
         return new Promise(async (resolve, reject) => {
             console.log("Fetching records at URL: " + race_url)
             try {
-                rows = await getRaceRecords(race_url, table)
+                rows = await getRaceRecords(race_url, table, race_id)
                 tableExists = await db.checkIfTableExists(table)
             } catch (err) {
                 reject(err)
             }
+            console.log("Race records received! Attempting to insert all rows. ")
             if (!tableExists) {
                 db.createTable(table)
             }
             for (const row of rows) {
                 try {
-                    await db.insertEntry(row['date'], row['player'], row['days'], row['lap1'], row['lap2'], row['lap3'],
-                        row['coins'], row['shrooms'], row['character'], row['kart'], row['tires'], row['glider'],
-                        row['time'], row['video_url'], row['controller'], row['nation'], row['race'], row['cc'], table)
+                    await db.insertEntry(row['date'], row['player'], row['days'], row['lap1'], row['lap2'],
+                        row['lap3'], row['coins'], row['shrooms'], row['character'], row['kart'], row['tires'],
+                        row['glider'], row['time'], row['video_url'], row['controller'], row['nation'], row['race'],
+                        row['race_id'], row['cc'], table)
                 } catch (e) {
 
                 }

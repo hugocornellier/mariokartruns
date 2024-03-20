@@ -15,18 +15,15 @@ app.get("*", (req, res) => {
 
 io.on("connection", (socket) => {
     console.log("Socket.io connection made successfully.");
-    socket.on("get_race_data", async (race, game) => {
+    socket.on("get_race_data", async (race, game, cc) => {
         console.log("Getting race data...")
-        io.emit("get_race_data_ret", await db.getAllEntriesByRace(race, game));
+        io.emit("get_race_data_ret", await db.getAllEntriesByRace(race, game, cc));
     })
     socket.on("get_player_data", async (player, game) => {
         io.emit("get_player_data_ret", await db.getAllEntriesByPlayer(decodeURI(player), game), await db.getRecords(game));
     })
-    socket.on("get_mk8_records", async () => {
-        io.emit("get_mk8_records_ret", await db.getRecords('mk8'));
-    })
-    socket.on("get_mk8dx_records", async () => {
-        io.emit("get_mk8dx_records_ret", await db.getRecords('mk8dx'));
+    socket.on("get_records", async (table, cc) => {
+        io.emit("get_records_ret", await db.getRecords(table, cc));
     })
 })
 
@@ -38,11 +35,13 @@ server.listen(
     async () => {
         return new Promise(async (resolve) => {
             console.log(`Server running!`)
-            //await db.deleteTable('mk8dx')
-            //const game = 'mk8dx'
-            //for (var url of await scraper.getRaceURLs(game)) {
-            //    await scraper.getAndInsertRecords(url, game)
-            //}
+            let race_id = 1
+            const game = 'mk8dx'
+            await db.deleteTable(game)
+            for (var url of await scraper.getRaceURLs(game)) {
+                await scraper.getAndInsertRecords(url, game, race_id)
+                race_id = race_id + 1
+            }
             resolve()
         })
     }

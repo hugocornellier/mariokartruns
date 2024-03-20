@@ -21,8 +21,9 @@ module.exports = {
                 video_url VARCHAR(250) NOT NULL,
                 controller VARCHAR(250) NOT NULL,
                 nation VARCHAR(250) NOT NULL,
-                race VARCHAR(250) NOT NULL
-                ${tableName === "mk8dx" ? ", cc VARCHAR(50)" : ""}
+                race VARCHAR(250) NOT NULL, 
+                race_id INTEGER NOT NULL,
+                cc VARCHAR(50)
             )
         `)
     },
@@ -36,17 +37,18 @@ module.exports = {
     },
 
     insertEntry: async function insertEntry(date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart,
-                                            tires, glider, time, video_url, controller, nation, race, cc, table) {
+                                            tires, glider, time, video_url, controller, nation, race, race_id, cc, table) {
         return new Promise(async (resolve, reject) => {
             const existingEntry = await this.getEntry(date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart,
                 tires, glider, time, video_url, controller, nation, race, cc, table)
+            console.log(existingEntry)
             if (existingEntry.length === 0) {
                 db_conn.run(
                     `INSERT INTO ${table} (date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart, 
-                                                   tires, glider, time, video_url, controller, nation, race, cc) 
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                                                   tires, glider, time, video_url, controller, nation, race, race_id, cc) 
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart, tires, glider, time,
-                        video_url, controller, nation, race, cc],
+                        video_url, controller, nation, race, race_id, cc],
                     (err) => {
                         if (err)
                             reject(err)
@@ -70,7 +72,6 @@ module.exports = {
                 FROM ${table} 
                 WHERE date = ? 
                 AND player = ? 
-                AND days = ? 
                 AND lap1 = ? 
                 AND lap2 = ? 
                 AND lap3 = ? 
@@ -86,7 +87,7 @@ module.exports = {
                 AND nation = ? 
                 AND race = ? 
                 AND cc = ?`,
-                [date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart,
+                [date, player, lap1, lap2, lap3, coins, shrooms, character, kart,
                     tires, glider, time, video_url, controller, nation, race, cc],
                 (err, rows) => {
                     if (err) reject(err)
@@ -115,14 +116,15 @@ module.exports = {
         })
     },
 
-    getAllEntriesByRace: async function getAllEntriesByRace(race, table) {
+    getAllEntriesByRace: async function getAllEntriesByRace(race, table, cc) {
         return new Promise((resolve, reject) => {
             db_conn.all(
                 `SELECT * 
                 FROM ${table} 
                 WHERE race = ?
+                AND cc = ? 
                 ORDER BY time ASC`,
-                [race],
+                [race, cc],
                 (err, rows) => {
                     if (err) reject(err)
                     else resolve(rows)
@@ -147,12 +149,13 @@ module.exports = {
         })
     },
 
-    getRecords: async function getRecords(table) {
+    getRecords: async function getRecords(table, cc) {
         return new Promise((resolve, reject) => {
             db_conn.all(
                 `SELECT * 
                 FROM ${table} 
-                ORDER BY race, time ASC`,
+                WHERE cc = '${cc}'
+                ORDER BY race_id, time`,
                 [], (err, rows) => {
                     if (err)
                         reject(err)

@@ -30,6 +30,23 @@ span {
   margin-bottom: 20px;
 }
 
+.bcontent .tabs {
+  border-bottom: 2px solid #d3d3d3;
+}
+
+.bcontent .tabs div {
+  position: relative;
+  top: 2px;
+  padding: 5px 10px;
+}
+
+.bcontent .tabs .active {
+  border-bottom: 2px solid orange;
+  background: #eee;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
 .race-title .game-id.mk8 {
   background: #d6eeb9
 }

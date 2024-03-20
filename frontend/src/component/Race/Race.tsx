@@ -4,15 +4,12 @@ import { Util } from "../../utils/Util";
 import { useEffect, useState } from "react";
 
 export default function Race(props: any) {
-    const [raceName, setRaceName] = useState("");
-    useEffect(() => {
-        setRaceName(Util.getPageLocation());
-    }, []);
+    const [cc, setCC] = useState<string>("150cc");
 
     return (
         <>
-            <RaceTitle game={props.game} raceName={raceName} />
-            <RaceTable game={props.game} raceName={raceName} />
+            <RaceTitle game={props.game} raceName={Util.getPageLocation()} />
+            <RaceTable cc={cc} game={props.game} raceName={Util.getPageLocation()} />
         </>
     );
 }

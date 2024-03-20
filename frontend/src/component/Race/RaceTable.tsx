@@ -16,7 +16,7 @@ export default function RaceTable(props: any) {
         const playerName: string = Util.getPageLocation();
         if (!socket || playerName.length === 0) return;
         if (Util.pageDirIsMK8() || Util.pageDirIsMK8DX()) {
-            socket.emit("get_race_data", props.raceName, props.game);
+            socket.emit("get_race_data", props.raceName, props.game, props.cc);
             socket.on("get_race_data_ret", (data: any) => setRaceData(data));
             setLabels([
                 "",
@@ -59,19 +59,12 @@ export default function RaceTable(props: any) {
                 "Length",
             ]);
         }
-        else if (Util.onMK8RaceList()) {
-            socket.emit("get_mk8_records");
-            socket.on("get_mk8_records_ret", (data: any) => setRaceData(data));
+        else if (Util.onMK8RaceList() || Util.onMK8DXRaceList()) {
+            socket.emit("get_records", props.game, props.cc);
+            socket.on("get_records_ret", (data: any) => setRaceData(data));
             setIsTrackList(true);
             setLabels(["Track", "Record", "Player"]);
         }
-        else if (Util.onMK8DXRaceList()) {
-            socket.emit("get_mk8dx_records");
-            socket.on("get_mk8dx_records_ret", (data: any) => setRaceData(data));
-            setIsTrackList(true);
-            setLabels(["Track", "Record", "Player"]);
-        }
-        console.log();
         return () => {
             socket.off();
         };
