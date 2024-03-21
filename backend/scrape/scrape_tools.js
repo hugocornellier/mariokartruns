@@ -2,36 +2,29 @@ const fetch = require("cross-fetch");
 const parser = require("node-html-parser");
 const db = require("../db/db");
 
-
 const formatDate = date => {
-    var d = new Date(date),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
-    if (month.length < 2)
-        month = '0' + month;
-    if (day.length < 2)
-        day = '0' + day;
-    return [year, month, day].join('-');
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 };
 
 const removeYouTubeLinksFromArray = a => a.filter(i => !i.includes("youtube.com/") && !i.includes("youtu.be/"));
-const removeDuplicatesFromArray = arr => {
-    return arr.filter((value, index) => arr.indexOf(value) === index);
-};
+const removeDuplicatesFromArray = arr => arr.filter((value, index) => arr.indexOf(value) === index);
 
 async function fetchHTML(url) {
-    return new Promise(async (resolve, reject) => {
-        const res = await fetch(url)
+    try {
+        const res = await fetch(url);
         if (res.status >= 400)
-            reject("Bad response from server")
-        const html = await res.text()
-        if (html) {
-            resolve(html)
-        } else {
-            reject("Error getting HTML.")
-        }
-    })
+            throw new Error("Bad response from server");
+        const html = await res.text();
+        if (html)
+            return html;
+        throw new Error("Error getting HTML.");
+    } catch (error) {
+        throw new Error(error.message);
+    }
 }
 
 async function getRaceRecords(race_url, game, race_id) {
@@ -42,43 +35,35 @@ async function getRaceRecords(race_url, game, race_id) {
             reject("Error getting HTML.")
         const cc = race_url.slice(-5) === "m=200" ? "200cc" : "150cc"
         const table = (parser.parse(html).querySelectorAll('table'))[2]
+        const race = (parser.parse(html).querySelectorAll('h2'))[0].innerText
         atFirstRow = true
         for (var r of table.querySelectorAll('tr')) {
             if (!atFirstRow) {
                 var row = {}
                 cell_count = 0
-                for (var c of r.querySelectorAll('td')) {
-                    row['date'] = (cell_count === 0) ? c.textContent.trim() : row['date']
-                    row['player'] = (cell_count === 2) ? c.textContent.trim() : row['player']
-                    row['days'] = (cell_count === 4) ? c.textContent.trim() : row['days']
-                    row['lap1'] = (cell_count === 5) ? c.textContent.trim() : row['lap1']
-                    row['lap2'] = (cell_count === 6) ? c.textContent.trim() : row['lap2']
-                    row['lap3'] = (cell_count === 7) ? c.textContent.trim() : row['lap3']
-                    row['coins'] = (cell_count === 8) ? c.textContent.trim() : row['coins']
-                    row['shrooms'] = (cell_count === 9) ? c.textContent.trim() : row['shrooms']
-                    row['character'] = (cell_count === 10) ? c.textContent.trim() : row['character']
-                    row['kart'] = (cell_count === 11) ? c.textContent.trim() : row['kart']
-                    row['tires'] = (cell_count === 12) ? c.textContent.trim() : row['tires']
-                    row['glider'] = (cell_count === 13) ? c.textContent.trim() : row['glider']
-                    row['race'] = parser.parse(html).querySelectorAll('h2')[0].textContent
-                    row['race_id'] = race_id
-                    row['cc'] = cc
-                    if (cell_count === 1) {
-                        el = parser.parse(c.innerHTML)
-                        a_el = el.querySelector('a')
-                        img_el = el.querySelector('img')
-                        rawAttrs = a_el ? a_el.rawAttrs : null
-                        rawAttrsImg = img_el ? img_el.rawAttrs : null
-                        row['time'] = c.textContent.trim()
-                        row['video_url'] = rawAttrs ? rawAttrs.split('"')[1].trim() : 0
-                        row['controller'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : "default"
-                    } else if (cell_count === 3) {
-                        el = parser.parse(c.innerHTML)
-                        img_el = el.querySelector('img')
-                        rawAttrsImg = img_el ? img_el.rawAttrs : null
-                        row['nation'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : 0
+                for (const cell of r.querySelectorAll('td')) {
+                    row['race'] = race
+                    row['race_id'] = race_id;
+                    row['cc'] = cc;
+                    const properties = ['date', 'player', 'days', 'lap1', 'lap2', 'lap3', 'coins', 'shrooms', 'character', 'kart', 'tires', 'glider'];
+                    properties.forEach((property, index) => {
+                        row[property] = cell_count === index ? cell.textContent.trim() : row[property];
+                    });
+                    if (cell_count === 1 || cell_count === 3) {
+                        const el = parser.parse(cell.innerHTML);
+                        const img_el = el.querySelector('img');
+                        const rawAttrsImg = img_el ? img_el.rawAttrs : null;
+                        if (cell_count === 1) {
+                            const a_el = el.querySelector('a');
+                            const rawAttrs = a_el ? a_el.rawAttrs : null;
+                            row['time'] = cell.textContent.trim();
+                            row['video_url'] = rawAttrs ? rawAttrs.split('"')[1].trim() : 0;
+                            row['controller'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : "default";
+                        } else {
+                            row['nation'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : 0;
+                        }
                     }
-                    cell_count++
+                    cell_count++;
                 }
                 const d = new Date(row['date'])
                 row['date'] = (!isNaN(d.getTime())) ? formatDate(d) : '0: ' + row['date']
@@ -93,31 +78,27 @@ async function getRaceRecords(race_url, game, race_id) {
 
 module.exports = {
     getAndInsertRecords: async function getAndInsertRecords(race_url, table, race_id) {
-        return new Promise(async (resolve, reject) => {
-            console.log("Fetching records at URL: " + race_url)
-            try {
-                rows = await getRaceRecords(race_url, table, race_id)
-                tableExists = await db.checkIfTableExists(table)
-            } catch (err) {
-                reject(err)
-            }
-            console.log("Race records received! Attempting to insert all rows. ")
+        try {
+            console.log("Fetching records at URL: " + race_url);
+            const rows = await getRaceRecords(race_url, table, race_id);
+            console.log("Race records received! Attempting to insert all rows.");
+            console.log(rows);
+            const tableExists = await db.checkIfTableExists(table);
             if (!tableExists) {
-                db.createTable(table)
+                await db.createTable(table);
             }
             for (const row of rows) {
                 try {
-                    await db.insertEntry(row['date'], row['player'], row['days'], row['lap1'], row['lap2'],
-                        row['lap3'], row['coins'], row['shrooms'], row['character'], row['kart'], row['tires'],
-                        row['glider'], row['time'], row['video_url'], row['controller'], row['nation'], row['race'],
-                        row['race_id'], row['cc'], table)
+                    await db.insertEntry(row, table);
                 } catch (e) {
-
+                    // Handle insertion error if needed
                 }
             }
-            console.log("Done inserting...")
-            resolve()
-        })
+            console.log("Done inserting...");
+            return;
+        } catch (error) {
+            throw new Error(error.message);
+        }
     },
 
     getRaceURLs: async function getRaceURLs(game) {

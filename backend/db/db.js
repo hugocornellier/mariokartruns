@@ -11,6 +11,10 @@ module.exports = {
                 lap1 VARCHAR(50) NOT NULL,
                 lap2 VARCHAR(50) NOT NULL,
                 lap3 VARCHAR(50) NOT NULL,
+                lap4 VARCHAR(50),
+                lap5 VARCHAR(50),
+                lap6 VARCHAR(50),
+                lap7 VARCHAR(50),
                 coins VARCHAR(50) NOT NULL,
                 shrooms VARCHAR(50) NOT NULL,
                 character VARCHAR(250) NOT NULL,
@@ -36,62 +40,63 @@ module.exports = {
         }
     },
 
-    insertEntry: async function insertEntry(date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart,
-                                            tires, glider, time, video_url, controller, nation, race, race_id, cc, table) {
+    insertEntry: async function insertEntry(row, table) {
         return new Promise(async (resolve, reject) => {
-            const existingEntry = await this.getEntry(date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart,
-                tires, glider, time, video_url, controller, nation, race, cc, table)
-            console.log(existingEntry)
+            const existingEntry = await this.getEntry(row, table);
             if (existingEntry.length === 0) {
-                db_conn.run(
-                    `INSERT INTO ${table} (date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart, 
-                                                   tires, glider, time, video_url, controller, nation, race, race_id, cc) 
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart, tires, glider, time,
-                        video_url, controller, nation, race, race_id, cc],
-                    (err) => {
-                        if (err)
-                            reject(err)
-                        else {
-                            console.log(`Inserted a row.`)
-                            resolve()
-                        }
+                const columns = ['date', 'player', 'days', 'lap1', 'lap2', 'lap3', 'coins', 'shrooms', 'character',
+                    'kart', 'tires', 'glider', 'time', 'video_url', 'controller', 'nation', 'race', 'race_id', 'cc'];
+                const babyParkColumns = (row.race !== "GCN Baby Park") ? ['lap4', 'lap5', 'lap6', 'lap7'] : [];
+                const allColumns = [...columns, ...babyParkColumns];
+                const insertQuery = `
+                    INSERT INTO ${table} (${allColumns.join(', ')}) 
+                    VALUES (${Array(allColumns.length).fill('?').join(', ')})
+                `;
+                const insertValues = allColumns.map(col => row[col]);
+                db_conn.run(insertQuery, insertValues, (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        console.log(`Inserted a row.`);
+                        resolve();
                     }
-                )
+                });
             } else {
-                reject("Row already exists.")
+                reject("Row already exists.");
             }
         })
     },
 
-    getEntry: async function getEntry(date, player, days, lap1, lap2, lap3, coins, shrooms, character, kart,
-                                      tires, glider, time, video_url, controller, nation, race, cc, table) {
+    getEntry: async function getEntry(row, table) {
         return new Promise((resolve, reject) => {
             db_conn.all(
                 `SELECT * 
-                FROM ${table} 
-                WHERE date = ? 
-                AND player = ? 
-                AND lap1 = ? 
-                AND lap2 = ? 
-                AND lap3 = ? 
-                AND coins = ? 
-                AND shrooms = ? 
-                AND character = ? 
-                AND kart = ? 
-                AND tires = ? 
-                AND glider = ? 
-                AND time = ? 
-                AND video_url = ? 
-                AND controller = ? 
-                AND nation = ? 
-                AND race = ? 
-                AND cc = ?`,
-                [date, player, lap1, lap2, lap3, coins, shrooms, character, kart,
-                    tires, glider, time, video_url, controller, nation, race, cc],
+                    FROM ${table} 
+                    WHERE date = ? 
+                    AND player = ? 
+                    AND lap1 = ? 
+                    AND lap2 = ? 
+                    AND lap3 = ? 
+                    AND coins = ? 
+                    AND shrooms = ? 
+                    AND character = ? 
+                    AND kart = ? 
+                    AND tires = ? 
+                    AND glider = ? 
+                    AND time = ? 
+                    AND video_url = ? 
+                    AND controller = ? 
+                    AND nation = ? 
+                    AND race = ? 
+                    AND cc = ?`,
+                [row['date'], row['player'], row['lap1'], row['lap2'], row['lap3'], row['coins'],
+                    row['shrooms'], row['character'], row['kart'], row['tires'], row['glider'], row['time'],
+                    row['video_url'], row['controller'], row['nation'], row['race'], row['cc']],
                 (err, rows) => {
-                    if (err) reject(err)
-                    else resolve(rows)
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(rows);
                 }
             )
         })
@@ -102,15 +107,10 @@ module.exports = {
             db_conn.all(
                 `SELECT name FROM sqlite_master WHERE type='table' AND name='${tableName}';`,
                 (err, rows) => {
-                    if (err)
-                        reject(err)
-                    else {
-                        if (rows.length > 0)
-                            resolve(true)
-                        else {
-                            resolve(false)
-                        }
+                    if (err) {
+                        reject(err);
                     }
+                    resolve((rows.length > 0));
                 }
             )
         })
@@ -126,8 +126,26 @@ module.exports = {
                 ORDER BY time ASC`,
                 [race, cc],
                 (err, rows) => {
-                    if (err) reject(err)
-                    else resolve(rows)
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(rows);
+                }
+            )
+        })
+    },
+
+    deleteAllByRaceId: async function deleteAllByRaceId(race_id, table) {
+        return new Promise((resolve, reject) => {
+            db_conn.exec(
+                `DELETE 
+                FROM ${table} 
+                WHERE race_id = '${race_id}'`,
+                (err, rows) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(rows);
                 }
             )
         })
@@ -142,8 +160,10 @@ module.exports = {
                 ORDER BY date DESC, time ASC`,
                 [player],
                 (err, rows) => {
-                    if (err) reject(err)
-                    else resolve(rows)
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(rows);
                 }
             )
         })
@@ -157,17 +177,18 @@ module.exports = {
                 WHERE cc = '${cc}'
                 ORDER BY race_id, time`,
                 [], (err, rows) => {
-                    if (err)
+                    if (err) {
                         reject(err)
-                    else {
-                        let tracks_seen = [], individual_records = []
+                    } else {
+                        const tracksSeen = new Set();
+                        const individualRecords = [];
                         for (const record of rows) {
-                            if (!tracks_seen.includes(record.race)) {
-                                tracks_seen.push(record.race)
-                                individual_records.push(record)
+                            if (!tracksSeen.has(record.race)) {
+                                tracksSeen.add(record.race);
+                                individualRecords.push(record);
                             }
                         }
-                        resolve(individual_records)
+                        resolve(individualRecords)
                     }
                 }
             )
