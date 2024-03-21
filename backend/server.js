@@ -41,12 +41,12 @@ server.listen(
             //    'mk8',
             //    41
             // )
-            let race_id = 1.1
-            const game = 'mk8dx'
+            const game = 'mk8'
+            let race_id = game === 'mk8dx' ? 1.01 : 1
             await db.deleteTable(game)
             for (var url of await scraper.getRaceURLs(game)) {
                 await scraper.getAndInsertRecords(url, game, Math.floor(race_id))
-                race_id = race_id + 0.5
+                race_id = race_id + (game === 'mk8dx' ? 0.5 : 1)
             }
             resolve()
         })
