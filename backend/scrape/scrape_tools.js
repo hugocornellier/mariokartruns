@@ -28,52 +28,67 @@ async function fetchHTML(url) {
 }
 
 async function getRaceRecords(race_url, game, race_id) {
-    return new Promise(async (resolve, reject) => {
-        rows = []
-        const html = await fetchHTML(race_url)
-        if (!html)
-            reject("Error getting HTML.")
-        const cc = race_url.slice(-5) === "m=200" ? "200cc" : "150cc"
-        const table = (parser.parse(html).querySelectorAll('table'))[2]
-        const race = (parser.parse(html).querySelectorAll('h2'))[0].innerText
-        atFirstRow = true
-        for (var r of table.querySelectorAll('tr')) {
+    try {
+        const rows = [];
+        const html = await fetchHTML(race_url);
+        if (!html) {
+            throw new Error("Error getting HTML.");
+        }
+        const cc = race_url.slice(-5) === "m=200" ? "200cc" : "150cc";
+        const table = parser.parse(html).querySelectorAll('table')[2];
+        let atFirstRow = true;
+        for (const r of table.querySelectorAll('tr')) {
             if (!atFirstRow) {
-                var row = {}
-                cell_count = 0
-                for (const cell of r.querySelectorAll('td')) {
-                    row['race'] = race
+                const row = {};
+                let cell_count = 0;
+                for (const c of r.querySelectorAll('td')) {
+                    row['race'] = parser.parse(html).querySelectorAll('h2')[0].textContent;
                     row['race_id'] = race_id;
                     row['cc'] = cc;
-                    const properties = ['date', 'player', 'days', 'lap1', 'lap2', 'lap3', 'coins', 'shrooms', 'character', 'kart', 'tires', 'glider'];
-                    properties.forEach((property, index) => {
-                        row[property] = cell_count === index ? cell.textContent.trim() : row[property];
-                    });
-                    if (cell_count === 1 || cell_count === 3) {
-                        const el = parser.parse(cell.innerHTML);
+                    row['date'] = (cell_count === 0) ? c.textContent.trim() : row['date'];
+                    row['player'] = (cell_count === 2) ? c.textContent.trim() : row['player'];
+                    row['days'] = (cell_count === 4) ? c.textContent.trim() : row['days'];
+                    row['lap1'] = (cell_count === 5) ? c.textContent.trim() : row['lap1'];
+                    row['lap2'] = (cell_count === 6) ? c.textContent.trim() : row['lap2'];
+                    row['lap3'] = (cell_count === 7) ? c.textContent.trim() : row['lap3'];
+                    if (row['race'] === "GCN Baby Park") {
+                        console.log("BABY PARK!");
+                    }
+                    row['coins'] = (cell_count === 8) ? c.textContent.trim() : row['coins'];
+                    row['shrooms'] = (cell_count === 9) ? c.textContent.trim() : row['shrooms'];
+                    row['character'] = (cell_count === 10) ? c.textContent.trim() : row['character'];
+                    row['kart'] = (cell_count === 11) ? c.textContent.trim() : row['kart'];
+                    row['tires'] = (cell_count === 12) ? c.textContent.trim() : row['tires'];
+                    row['glider'] = (cell_count === 13) ? c.textContent.trim() : row['glider'];
+                    if (cell_count === 1) {
+                        const el = parser.parse(c.innerHTML);
+                        const a_el = el.querySelector('a');
+                        const img_el = el.querySelector('img');
+                        const rawAttrs = a_el ? a_el.rawAttrs : null;
+                        const rawAttrsImg = img_el ? img_el.rawAttrs : null;
+                        row['time'] = c.textContent.trim();
+                        row['video_url'] = rawAttrs ? rawAttrs.split('"')[1].trim() : 0;
+                        row['controller'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : "default";
+                    } else if (cell_count === 3) {
+                        const el = parser.parse(c.innerHTML);
                         const img_el = el.querySelector('img');
                         const rawAttrsImg = img_el ? img_el.rawAttrs : null;
-                        if (cell_count === 1) {
-                            const a_el = el.querySelector('a');
-                            const rawAttrs = a_el ? a_el.rawAttrs : null;
-                            row['time'] = cell.textContent.trim();
-                            row['video_url'] = rawAttrs ? rawAttrs.split('"')[1].trim() : 0;
-                            row['controller'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : "default";
-                        } else {
-                            row['nation'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : 0;
-                        }
+                        row['nation'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : 0;
                     }
                     cell_count++;
                 }
-                const d = new Date(row['date'])
-                row['date'] = (!isNaN(d.getTime())) ? formatDate(d) : '0: ' + row['date']
-                rows.push(row)
+                const d = new Date(row['date']);
+                row['date'] = (!isNaN(d.getTime())) ? formatDate(d) : '0: ' + row['date'];
+                rows.push(row);
             } else {
-                atFirstRow = !atFirstRow
+                atFirstRow = !atFirstRow;
             }
         }
-        resolve(rows.filter(value => Object.keys(value).length !== 0))
-    })
+        return rows.filter(value => Object.keys(value).length !== 0);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 }
 
 module.exports = {
