@@ -31,15 +31,21 @@ async function getRaceRecords(race_url, game, race_id) {
     try {
         const rows = [];
         const html = await fetchHTML(race_url);
+        let cup = ""
+        const needle = "&cup="
+        if (race_url.includes(needle)) {
+            cup = race_url.split(needle)[1]
+        }
         if (!html) {
             throw new Error("Error getting HTML.");
         }
-        const cc = race_url.slice(-5) === "m=200" ? "200cc" : "150cc";
+        const cc = race_url.includes("&m=200") ? "200cc" : "150cc";
         const table = parser.parse(html).querySelectorAll('table')[2];
         let atFirstRow = true;
         for (const r of table.querySelectorAll('tr')) {
             if (!atFirstRow) {
                 const row = {};
+                row['cup'] = cup
                 let cell_count = 0;
                 for (const c of r.querySelectorAll('td')) {
                     row['race'] = parser.parse(html).querySelectorAll('h2')[0].textContent;
@@ -115,13 +121,15 @@ module.exports = {
         }
     },
 
-    scrapeAllRacesByGame: async function scrapeAllRacesByGame(game, deleteTable) {
+    scrapeAllRacesByGame: async function scrapeAllRacesByGame(game, deleteTable, startingRaceID) {
         if (deleteTable) {
             await db.deleteTable(game)
         }
         let race_id = game === 'mk8dx' ? 1.01 : 1
         for (var url of await this.getRaceURLs(game)) {
-            await this.getAndInsertRecords(url, game, Math.floor(race_id))
+            if (race_id > startingRaceID) {
+                await this.getAndInsertRecords(url, game, Math.floor(race_id))
+            }
             race_id = race_id + (game === 'mk8dx' ? 0.5 : 1)
         }
     },
@@ -130,18 +138,28 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             race_urls = []
             base_url = `https://mkwrs.com/${game}/`
+            let cup = null
             const html = await fetchHTML(base_url)
             if (!html)
                 reject("Error getting HTML.")
             const tables = parser.parse(html).querySelectorAll('table')
             const table_els = [tables[0], tables[1]]
             for (var table of table_els) {
+                let tr_count = 0
                 for (var tr of table.querySelectorAll('tr')) {
                     const track_cell = tr.querySelectorAll('td')[0]
                     if (track_cell) {
+                        a_el = track_cell.querySelector('center')
+                        if (a_el) {
+                            let cup_data= a_el.innerHTML.split('src="cups/')[1].trim()
+                            cup_data = cup_data.split(".webp")[0].trim()
+                            const cup_first_letter_capitalized = cup_data.charAt(0).toUpperCase() + cup_data.slice(1)
+                            cup = cup_first_letter_capitalized + ' '
+                            console.log(cup)
+                        }
                         a_el = track_cell.querySelector('a')
                         if (a_el) {
-                            race_urls.push(base_url + a_el.rawAttrs.split('"')[1].trim())
+                            race_urls.push(base_url + a_el.rawAttrs.split('"')[1].trim() + "&cup=" + cup)
                         }
                     }
                 }

@@ -27,6 +27,7 @@ module.exports = {
                 nation VARCHAR(250) NOT NULL,
                 race VARCHAR(250) NOT NULL, 
                 race_id INTEGER NOT NULL,
+                cup VARCHAR(50),
                 cc VARCHAR(50)
             )
         `)
@@ -45,7 +46,7 @@ module.exports = {
             const existingEntry = await this.getEntry(row, table);
             if (existingEntry.length === 0) {
                 const columns = ['date', 'player', 'days', 'lap1', 'lap2', 'lap3', 'coins', 'shrooms', 'character',
-                    'kart', 'tires', 'glider', 'time', 'video_url', 'controller', 'nation', 'race', 'race_id', 'cc'];
+                    'kart', 'tires', 'glider', 'time', 'video_url', 'controller', 'nation', 'race', 'race_id', 'cc', 'cup'];
                 const babyParkColumns = (row.race !== "GCN Baby Park") ? ['lap4', 'lap5', 'lap6', 'lap7'] : [];
                 const allColumns = [...columns, ...babyParkColumns];
                 const insertQuery = `
