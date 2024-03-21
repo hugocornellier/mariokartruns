@@ -127,7 +127,7 @@ module.exports = {
         }
         let race_id = game === 'mk8dx' ? 1.01 : 1
         for (var url of await this.getRaceURLs(game)) {
-            if (race_id > startingRaceID) {
+            if (race_id >= startingRaceID) {
                 await this.getAndInsertRecords(url, game, Math.floor(race_id))
             }
             race_id = race_id + (game === 'mk8dx' ? 0.5 : 1)

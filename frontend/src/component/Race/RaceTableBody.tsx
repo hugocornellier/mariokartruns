@@ -32,7 +32,9 @@ export default function RaceTableBody(props: any) {
                                     {record.race}
                                 </Link>
                             </td>
-                            <td data-label="Record">{record.time}</td>
+                            <td data-label="Record">
+                                {record.time}
+                            </td>
                             <td data-label="Player">
                                 <Link
                                     className={"cursor-pointer"}
@@ -40,6 +42,9 @@ export default function RaceTableBody(props: any) {
                                 >
                                     {record.player}
                                 </Link>
+                            </td>
+                            <td data-label="Length">
+                                {record.days}
                             </td>
                         </tr>
                     ) : (

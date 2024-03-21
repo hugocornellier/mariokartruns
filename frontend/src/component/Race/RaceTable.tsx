@@ -66,7 +66,7 @@ export default function RaceTable(props: any) {
             socket.emit("get_records", props.game, props.cc);
             socket.on("get_records_ret", (data: any) => setRaceData(data));
             setIsTrackList(true);
-            setLabels(["Track", "Record", "Player"]);
+            setLabels(["Track", "Record", "Player", "Length"]);
         }
         return () => {
             socket.off();

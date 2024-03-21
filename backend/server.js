@@ -43,7 +43,7 @@ server.listen(
             // )
             await scraper.scrapeAllRacesByGame(
                 'mk8dx',
-                true,
+                false,
                 1
             )
             //console.log(await scraper.getRaceURLs('mk8dx'))
