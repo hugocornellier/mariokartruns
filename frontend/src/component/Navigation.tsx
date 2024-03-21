@@ -4,6 +4,29 @@ import Race from "./Race/Race";
 import Player from "./Player";
 
 export default function Navigation() {
+    const createGameRoutes = (game: string) => [
+        {
+            path: `/${game}`,
+            element: <GamePage game={game} />,
+        },
+        {
+            path: `/${game}/200cc`,
+            element: <GamePage game={game} />,
+        },
+        {
+            path: `/${game}/:race`,
+            element: <Race cc={'150cc'} game={game} />,
+        },
+        {
+            path: `/${game}/:race/200cc`,
+            element: <Race cc={'200cc'} game={game} />,
+        },
+        {
+            path: `/${game}/player/:player`,
+            element: <Player game={game} />,
+        },
+    ];
+
     const router = createBrowserRouter([
         {
             path: "/",
@@ -13,30 +36,8 @@ export default function Navigation() {
                 </div>
             ),
         },
-        {
-            path: "/mk8",
-            element: <GamePage game={"mk8"} />,
-        },
-        {
-            path: "/mk8/:race",
-            element: <Race game={"mk8"} />,
-        },
-        {
-            path: "/mk8/player/:player",
-            element: <Player game={"mk8"} />,
-        },
-        {
-            path: "/mk8dx",
-            element: <GamePage game={"mk8dx"} />,
-        },
-        {
-            path: "/mk8dx/:race",
-            element: <Race game={"mk8dx"} />,
-        },
-        {
-            path: "/mk8dx/player/:player",
-            element: <Player game={"mk8dx"} />,
-        },
+        ...createGameRoutes("mk8"),
+        ...createGameRoutes("mk8dx"),
     ]);
 
     return (

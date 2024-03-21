@@ -110,9 +110,19 @@ module.exports = {
                 }
             }
             console.log("Done inserting...");
-            return;
         } catch (error) {
             throw new Error(error.message);
+        }
+    },
+
+    scrapeAllRacesByGame: async function scrapeAllRacesByGame(game, deleteTable) {
+        if (deleteTable) {
+            await db.deleteTable(game)
+        }
+        let race_id = game === 'mk8dx' ? 1.01 : 1
+        for (var url of await this.getRaceURLs(game)) {
+            await this.getAndInsertRecords(url, game, Math.floor(race_id))
+            race_id = race_id + (game === 'mk8dx' ? 0.5 : 1)
         }
     },
 

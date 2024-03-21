@@ -6,11 +6,6 @@ import {useEffect} from "react";
 import {SocketHelper} from "../../context/SocketHelper";
 
 export default function RaceTableBody(props: any) {
-    useEffect((): void => {
-        for (const record of props.raceData) {
-            console.log(record)
-        }
-    }, []);
     return (
         <>
             <tbody>
@@ -32,7 +27,7 @@ export default function RaceTableBody(props: any) {
                             <td data-label="Race">
                                 <Link
                                     className={"cursor-pointer"}
-                                    to={`/${props.game}/` + record.race.replace(/ /g, "+")}
+                                    to={`/${props.game}/${record.race.replace(/ /g, "+")}${props.cc === '200cc' ? '/200cc' : ''}`}
                                 >
                                     {record.race}
                                 </Link>
@@ -48,9 +43,9 @@ export default function RaceTableBody(props: any) {
                             </td>
                         </tr>
                     ) : (
-                        <tr key={i} className={(((Util.pageDirIsMK8() && i === 0) || record.active_wr) ? "gold-tr" : "")}>
+                        <tr key={i} className={Util.pageDirIsMK8OrMK8DX() && i === 0 || record.active_wr ? "gold-tr" : ""}>
                             <td data-label="Crown">
-                                {((Util.pageDirIsMK8() && i === 0) || record.active_wr) && (
+                                {(Util.pageDirIsMK8OrMK8DX() && i === 0 || record.active_wr) && (
                                     <FontAwesomeIcon color={"#9a8015"} icon={faCrown}/>
                                 )}
                                 {record.video_url !== "0" && (

@@ -1,15 +1,15 @@
 import RaceTitle from "./RaceTitle";
 import RaceTable from "./RaceTable";
 import { Util } from "../../utils/Util";
-import { useEffect, useState } from "react";
+import Tabs from "../Tabs";
 
 export default function Race(props: any) {
-    const [cc, setCC] = useState<string>("150cc");
-
+    const raceName = Util.getRaceName()
     return (
         <>
-            <RaceTitle game={props.game} raceName={Util.getPageLocation()} />
-            <RaceTable cc={cc} game={props.game} raceName={Util.getPageLocation()} />
+            {props.game === "mk8dx" && <Tabs cc={props.cc} />}
+            <RaceTitle game={props.game} raceName={raceName} />
+            <RaceTable cc={props.cc} game={props.game} raceName={raceName} />
         </>
     );
 }

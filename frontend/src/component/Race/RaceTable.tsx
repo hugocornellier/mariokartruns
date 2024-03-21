@@ -1,7 +1,7 @@
 import { Socket } from "socket.io-client";
 import { SocketHelper } from "../../context/SocketHelper";
 import { useEffect, useState } from "react";
-import { Util } from "../../utils/Util";
+import {Util} from "../../utils/Util";
 import RaceTableHeader from "./RaceTableHeader";
 import RaceTableBody from "./RaceTableBody";
 
@@ -13,9 +13,10 @@ export default function RaceTable(props: any) {
     const [isTrackList, setIsTrackList] = useState<boolean>(false);
     const [tableLabelCol2, setTableLabelCol2] = useState<string>("Player");
     useEffect(() => {
-        const playerName: string = Util.getPageLocation();
-        if (!socket || playerName.length === 0) return;
-        if (Util.pageDirIsMK8() || Util.pageDirIsMK8DX()) {
+        if (!socket)
+            return;
+        if (Util.pageDirIsMK8OrMK8DX()) {
+            console.log(`I'm on a race page. Fetching data for ${props.game}, cc: ${props.cc}`);
             socket.emit("get_race_data", props.raceName, props.game, props.cc);
             socket.on("get_race_data_ret", (data: any) => setRaceData(data));
             setLabels([
@@ -30,6 +31,8 @@ export default function RaceTable(props: any) {
             ]);
         }
         else if (Util.pageDirIsPlayer()) {
+            const playerName: string = Util.getPageLocation();
+            console.log("I'm here1111!")
             console.log(`Fetching data for ${playerName}`)
             socket.emit("get_player_data", playerName, props.game);
             socket.on("get_player_data_ret", (data: any, records: any) => {
@@ -45,7 +48,6 @@ export default function RaceTable(props: any) {
                     }
                 }
                 setRaceData(data);
-                console.log(data)
             });
             setTableLabelCol2("Race");
             setLabels([
@@ -60,6 +62,7 @@ export default function RaceTable(props: any) {
             ]);
         }
         else if (Util.onMK8RaceList() || Util.onMK8DXRaceList()) {
+            console.log("I'm here2222!")
             socket.emit("get_records", props.game, props.cc);
             socket.on("get_records_ret", (data: any) => setRaceData(data));
             setIsTrackList(true);
@@ -77,7 +80,7 @@ export default function RaceTable(props: any) {
             ) : (
                 <table className="table">
                     <RaceTableHeader labels={labels} />
-                    <RaceTableBody game={props.game} raceData={raceData} isTrackList={isTrackList} tableLabelCol2={tableLabelCol2} />
+                    <RaceTableBody cc={props.cc} game={props.game} raceData={raceData} isTrackList={isTrackList} tableLabelCol2={tableLabelCol2} />
                 </table>
             )}
         </div>

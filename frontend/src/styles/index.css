@@ -38,13 +38,14 @@ span {
   position: relative;
   top: 2px;
   padding: 5px 10px;
+  cursor: pointer;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 
 .bcontent .tabs .active {
   border-bottom: 2px solid orange;
   background: #eee;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
 }
 
 .race-title .game-id.mk8 {
