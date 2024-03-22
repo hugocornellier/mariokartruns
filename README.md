@@ -2,13 +2,15 @@
 
 A work-in-progress web app that displays Mario Kart world records for all games in the series.
 
-## Dev:
+View the live web app: [https://mariokartruns.com](https://mariokartruns.com)
+
+## Set-up Instructions
+### Dev:
 - ```npm i && npm i --prefix ./frontend```
 - ```npm start```
 - In separate terminal:
-- ```npm start --prefix ./frontend```
+  - ```npm start --prefix ./frontend```
 
-## Production:
+### Production:
 - At root: ```npm run build```
-- ```serve -s -n build```
-- ```forever stopall; forever start ./backend/server.js```
+- ```forever stopall && forever start ./backend/server.js```
