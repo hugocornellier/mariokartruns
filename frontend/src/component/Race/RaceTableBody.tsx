@@ -60,10 +60,7 @@ export default function RaceTableBody(props: any) {
                                 {record.table_name.toUpperCase()}
                             </td>
                             <td data-label="Race">
-                                <Link
-                                    className={"cursor-pointer"}
-                                    to={`/${record.table_name}/${record.race.replace(/ /g, "+")}${props.cc === '200cc' ? '/200cc' : ''}`}
-                                >
+                                <Link to={`/${record.table_name}/${record.race.replace(/ /g, "+")}${props.cc === '200cc' ? '/200cc' : ''}`}>
                                     {record.race}
                                 </Link>
                             </td>
@@ -71,10 +68,7 @@ export default function RaceTableBody(props: any) {
                                 {record.time}
                             </td>
                             <td data-label="Player">
-                                <Link
-                                    className={"cursor-pointer"}
-                                    to={`/${record.table_name}/player/` + record.player.replace(/ /g, "+")}
-                                >
+                                <Link to={`/${record.table_name}/player/` + record.player.replace(/ /g, "+")}>
                                     {record.player}
                                 </Link>
                             </td>
