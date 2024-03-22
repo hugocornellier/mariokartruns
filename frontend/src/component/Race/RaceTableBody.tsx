@@ -6,10 +6,14 @@ import {useEffect} from "react";
 import {SocketHelper} from "../../context/SocketHelper";
 
 export default function RaceTableBody(props: any) {
+    useEffect(() => {
+        console.log(props.raceData)
+    })
     return (
         <>
             <tbody>
             {props.raceData.map((record: {
+                table_name: string;
                 days: any;
                 active_wr: boolean;
                 date: string;
@@ -22,7 +26,8 @@ export default function RaceTableBody(props: any) {
                 race: string;
             }, i: number) => (
                 <>
-                    {props.isTrackList ? (
+
+                    {props.isTrackList && (
                         <tr key={i}>
                             <td data-label="Race">
                                 <Link
@@ -43,11 +48,43 @@ export default function RaceTableBody(props: any) {
                                     {record.player}
                                 </Link>
                             </td>
-                            <td data-label="Length">
-                                {record.days}
+                            <td data-label="Date">
+                                {record.date}
                             </td>
                         </tr>
-                    ) : (
+                    )}
+
+                    {props.cc === 'all' && (
+                        <tr key={i}>
+                            <td data-label="Game">
+                                {record.table_name.toUpperCase()}
+                            </td>
+                            <td data-label="Race">
+                                <Link
+                                    className={"cursor-pointer"}
+                                    to={`/${record.table_name}/${record.race.replace(/ /g, "+")}${props.cc === '200cc' ? '/200cc' : ''}`}
+                                >
+                                    {record.race}
+                                </Link>
+                            </td>
+                            <td data-label="Record">
+                                {record.time}
+                            </td>
+                            <td data-label="Player">
+                                <Link
+                                    className={"cursor-pointer"}
+                                    to={`/${record.table_name}/player/` + record.player.replace(/ /g, "+")}
+                                >
+                                    {record.player}
+                                </Link>
+                            </td>
+                            <td data-label="Length">
+                                {record.date}
+                            </td>
+                        </tr>
+                    )}
+
+                    {(Util.pageDirIsMK8OrMK8DX() || Util.pageDirIsPlayer()) && (
                         <tr key={i} className={Util.pageDirIsMK8OrMK8DX() && i === 0 || record.active_wr ? "gold-tr" : ""}>
                             <td data-label="Crown">
                                 {(Util.pageDirIsMK8OrMK8DX() && i === 0 || record.active_wr) && (

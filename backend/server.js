@@ -24,6 +24,9 @@ io.on("connection", (socket) => {
     socket.on("get_records", async (table, cc) => {
         io.emit("get_records_ret", await db.getRecords(table, cc));
     })
+    socket.on("get_latest_records", async (table, cc) => {
+        io.emit("get_latest_records_ret", await db.getLatestRecords());
+    })
 })
 
 let home_path = app.settings['views'].substring(0, 5)

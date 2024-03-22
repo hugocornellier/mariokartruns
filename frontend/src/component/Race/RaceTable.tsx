@@ -32,8 +32,6 @@ export default function RaceTable(props: any) {
         }
         else if (Util.pageDirIsPlayer()) {
             const playerName: string = Util.getPageLocation();
-            console.log("I'm here1111!")
-            console.log(`Fetching data for ${playerName}`)
             socket.emit("get_player_data", playerName, props.game);
             socket.on("get_player_data_ret", (data: any, records: any) => {
                 for (const wr of data) {
@@ -62,11 +60,18 @@ export default function RaceTable(props: any) {
             ]);
         }
         else if (Util.onMK8RaceList() || Util.onMK8DXRaceList()) {
-            console.log("I'm here2222!")
             socket.emit("get_records", props.game, props.cc);
             socket.on("get_records_ret", (data: any) => setRaceData(data));
             setIsTrackList(true);
             setLabels(["Track", "Record", "Player", "Length"]);
+        }
+        else if (props.cc === 'all') {
+            console.log("Loading latest records!")
+            socket.emit("get_latest_records");
+            socket.on("get_latest_records_ret", (data: any) => {
+                setRaceData(data);
+            });
+            setLabels(["Game", "Track", "Record", "Player", "Date"]);
         }
         return () => {
             socket.off();

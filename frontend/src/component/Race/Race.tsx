@@ -8,7 +8,7 @@ export default function Race(props: any) {
     return (
         <>
             {props.game === "mk8dx" && <Tabs cc={props.cc} />}
-            <RaceTitle game={props.game} raceName={raceName} />
+            {props.cc !== "all" && <RaceTitle game={props.game} raceName={raceName} />}
             <RaceTable cc={props.cc} game={props.game} raceName={raceName} />
         </>
     );

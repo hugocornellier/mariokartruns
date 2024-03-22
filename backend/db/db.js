@@ -33,6 +33,29 @@ module.exports = {
         `)
     },
 
+    // ["Game", "Track", "Record", "Player", "Date"]
+    getLatestRecords: async function getLatestRecords(game) {
+        return new Promise((resolve, reject) => {
+            db_conn.all(
+                `SELECT * FROM (
+                         SELECT 'mk8' AS table_name, race, time, player, date FROM mk8
+                         UNION ALL
+                         SELECT 'mk8dx' AS table_name, race, time, player, date FROM mk8dx
+                     ) AS combined_data
+                     ORDER BY date DESC
+                     LIMIT 50;
+                `,
+                [],
+                (err, rows) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(rows);
+                }
+            )
+        })
+    },
+
     deleteTable: async function deleteTable(table) {
         if (await this.checkIfTableExists(table)) {
             db_conn.exec(`
@@ -112,6 +135,23 @@ module.exports = {
                         reject(err);
                     }
                     resolve((rows.length > 0));
+                }
+            )
+        })
+    },
+
+    getAllEntriesByGame: async function getAllEntriesByGame(game) {
+        return new Promise((resolve, reject) => {
+            db_conn.all(
+                `SELECT * 
+                FROM ${game} 
+                ORDER BY date ASC`,
+                [],
+                (err, rows) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(rows);
                 }
             )
         })

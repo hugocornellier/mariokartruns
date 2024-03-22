@@ -2,6 +2,7 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import GamePage from "./GamePage";
 import Race from "./Race/Race";
 import Player from "./Player";
+import Home from "./Home";
 
 export default function Navigation() {
     const createGameRoutes = (game: string) => [
@@ -31,9 +32,9 @@ export default function Navigation() {
         {
             path: "/",
             element: (
-                <div className="text-black">
-                    <h1>Welcome to MarioKartRuns!</h1>
-                </div>
+                <>
+                    <Home />
+                </>
             ),
         },
         ...createGameRoutes("mk8"),
