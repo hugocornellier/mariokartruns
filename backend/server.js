@@ -9,9 +9,6 @@ const db = require("./db/db")
 const scraper = require("./scrape/scrape_tools")
 
 app.use(express.static(path.join(__dirname, "../frontend/build")))
-app.get("*", (req, res) => {
-    res.send("")
-})
 
 io.on("connection", (socket) => {
     console.log("Socket.io connection made successfully.");
