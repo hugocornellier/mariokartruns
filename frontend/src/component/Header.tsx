@@ -10,9 +10,9 @@ export default function Header(props: any) {
                 <img
                     src={require('../img/logo.png')}
                     className="logo mr-3"
-                    alt={"MarioKartRecords Logo"}
+                    alt={"MarioKartRuns Logo"}
                 />
-                MarioKartRecords.io
+                MarioKartRuns.io
             </div>
         </div>
     )

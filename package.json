@@ -1,5 +1,5 @@
 {
-  "name": "mariokartrecords",
+  "name": "MarioKartRuns",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -11,7 +11,7 @@
   },
   "keywords": [
     "mkrecords",
-    "mariokartrecords"
+    "MarioKartRuns"
   ],
   "author": "Hugo Cornellier",
   "license": "ISC",

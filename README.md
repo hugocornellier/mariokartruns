@@ -1,4 +1,4 @@
-# Mario Kart Records
+# MarioKartRuns
 
 A work-in-progress web app that displays Mario Kart world records for all games in the series.
 

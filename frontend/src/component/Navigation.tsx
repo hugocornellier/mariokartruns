@@ -32,7 +32,7 @@ export default function Navigation() {
             path: "/",
             element: (
                 <div className="text-black">
-                    <h1>Welcome to Mario Kart Records!</h1>
+                    <h1>Welcome to MarioKartRuns!</h1>
                 </div>
             ),
         },
