@@ -12,7 +12,7 @@ export default function Header(props: any) {
                     className="logo mr-3"
                     alt={"MarioKartRuns Logo"}
                 />
-                MarioKartRuns.io
+                MarioKartRuns
             </div>
         </div>
     )
