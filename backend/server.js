@@ -10,7 +10,7 @@ const scraper = require("./scrape/scrape_tools")
 
 app.use(express.static(path.join(__dirname, "../frontend/build")))
 app.get("*", (req, res) => {
-    res.sendFile("index.html", {root: "../frontend/build"});
+    res.sendFile("index.html", {root: "mariokartrecords/frontend/build"});
 });
 
 io.on("connection", (socket) => {
