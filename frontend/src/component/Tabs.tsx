@@ -1,38 +1,33 @@
+import React from "react";
+import { Link } from "react-router-dom";
 import { Util } from "../utils/Util";
-import { useCallback, ReactNode } from "react";
 
 interface TabsProps {
     cc: string;
 }
 
-export default function Tabs(props: TabsProps) {
-    const openTab = useCallback((cc: string) => {
-        if (Util.pageDirIsMK8OrMK8DX()) {
-            const path = Util.getPath();
-            Util.goToPage(path.endsWith('/200cc') ? path.slice(0, -6) : path + '/200cc');
-        } else {
-            Util.goToPage('/mk8dx' + (cc === '200cc' ? '/200cc' : ''))
-        }
-    }, []);
-
+const Tabs: React.FC<TabsProps> = () => {
     return (
         <div className="tabs flex flex-row mb-6 h-10">
-            <TabButton onClick={() => openTab('150cc')} active={props.cc === "150cc"}>150cc</TabButton>
-            <TabButton onClick={() => openTab('200cc')} active={props.cc === "200cc"}>200cc</TabButton>
+            <TabButton cc="150cc" active={!Util.getPath().endsWith('200cc')} />
+            <TabButton cc="200cc" active={Util.getPath().endsWith('200cc')} />
         </div>
     );
-}
+};
 
 interface TabButtonProps {
-    onClick: () => void;
     active: boolean;
-    children: ReactNode;
+    cc: string;
 }
 
-function TabButton({ onClick, active, children }: TabButtonProps) {
+const TabButton: React.FC<TabButtonProps> = ({ cc, active }) => {
     return (
-        <div onClick={onClick} className={`mr-5 ${active ? 'active' : ''}`}>
-            {children}
-        </div>
+        <Link to={`/mk8dx${cc === '200cc' ? '/200cc' : ''}`}>
+            <div className={`mr-5 ${active ? 'active' : ''}`}>
+                {cc}
+            </div>
+        </Link>
     );
-}
+};
+
+export default Tabs;
