@@ -40,15 +40,15 @@ server.listen(
             console.log(`Server running!`)
             // await db.deleteAllByRaceId(41, 'mk8')
             // await scraper.getAndInsertRecords(
-            //    "https://mkwrs.com/mk8/display.php?track=GCN+Baby+Park",
-            //    'mk8',
-            //    41
+            //    "https://mkwrs.com/mk8dx/display.php?track=Wii+Coconut+Mall&cup=dash",
+            //    'mk8dx',
+            //    52
             // )
-            await scraper.scrapeAllRacesByGame(
-                'mk8dx',
-                false,
-                1
-            )
+            // await scraper.scrapeAllRacesByGame(
+            //     'mk8dx',
+            //     true,
+            //     1
+            // )
             //console.log(await scraper.getRaceURLs('mk8dx'))
             resolve()
         })

@@ -67,6 +67,7 @@ module.exports = {
 
     insertEntry: async function insertEntry(row, table) {
         return new Promise(async (resolve, reject) => {
+            console.log("Attempting to insert entry.")
             const existingEntry = await this.getEntry(row, table);
             if (existingEntry.length === 0) {
                 const columns = ['date', 'player', 'days', 'lap1', 'lap2', 'lap3', 'coins', 'shrooms', 'character',
@@ -87,6 +88,7 @@ module.exports = {
                     }
                 });
             } else {
+                console.log("Row already exists.");
                 reject("Row already exists.");
             }
         })
@@ -185,6 +187,7 @@ module.exports = {
                 WHERE race_id = '${race_id}'`,
                 (err, rows) => {
                     if (err) {
+                        console.log("Error: " + err)
                         reject(err);
                     }
                     resolve(rows);

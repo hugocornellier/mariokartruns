@@ -79,6 +79,7 @@ function TrackListRow({ record, game, cc }: TableRowProps) {
 function AllRow({ record }: { record: RaceRecord }) {
     return (
         <tr>
+            <td data-label="Date">{record.date}</td>
             <td data-label="Game">{record.table_name.toUpperCase()}</td>
             <td data-label="Race">
                 <Link to={`/${record.table_name}/${record.race.replace(/ /g, "+")}${record.cc === '200cc' ? '/200cc' : ''}`}>
@@ -91,7 +92,6 @@ function AllRow({ record }: { record: RaceRecord }) {
                     {record.player}
                 </Link>
             </td>
-            <td data-label="Length">{record.date}</td>
         </tr>
     );
 }

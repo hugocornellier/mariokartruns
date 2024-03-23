@@ -15,7 +15,7 @@ interface RaceData {
     [key: string]: any;
 }
 
-export default function RaceTable(props: RaceTableProps): JSX.Element {
+export default (props: RaceTableProps): JSX.Element => {
     const [socket, setSocket] = useState<Socket>();
     const [raceData, setRaceData] = useState<RaceData[]>();
     const [labels, setLabels] = useState<string[]>([]);
@@ -65,7 +65,7 @@ export default function RaceTable(props: RaceTableProps): JSX.Element {
                 socket.emit("get_latest_records");
                 socket.on("get_latest_records_ret", (data: RaceData[]) => {
                     setRaceData(data);
-                    setLabels(["Game", "Track", "Record", "Player", "Date"]);
+                    setLabels(["Date", "Game", "Track", "Record", "Player"]);
                 });
             }
         };
