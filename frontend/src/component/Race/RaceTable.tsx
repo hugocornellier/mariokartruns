@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import { SocketHelper } from "../../context/SocketHelper";
 import { Util } from "../../utils/Util";
-import { useNavigate } from 'react-router-dom'
 import RaceTableHeader from "./RaceTableHeader";
 import RaceTableBody from "./RaceTableBody";
 
@@ -17,12 +16,6 @@ interface RaceData {
 }
 
 export default (props: RaceTableProps): JSX.Element => {
-    const pathname = window.location.pathname
-    const [currentUrl, setCurrentUrl] = React.useState(pathname)
-    useEffect(() => {
-        setCurrentUrl(pathname)
-    }, [pathname])
-
     const [socket, setSocket] = useState<Socket>();
     const [raceData, setRaceData] = useState<RaceData[]>();
     const [labels, setLabels] = useState<string[]>([]);
@@ -42,16 +35,14 @@ export default (props: RaceTableProps): JSX.Element => {
     useEffect(() => {
         if (!socket) return;
 
-        console.log("Hi")
-
         const fetchRaceData = () => {
-            if (currentUrl && Util.onRacePage()) {
+            if (Util.onRacePage()) {
                 socket.emit("get_race_data", props.raceName, props.game, props.cc);
                 socket.on("get_race_data_ret", (data: RaceData[]) => {
                     setRaceData(data);
                     setLabels(["", "Time", tableLabelCol2, "Character", "Shrooms", "Country", "Date", "Length"]);
                 });
-            } else if (currentUrl && Util.pageDirIsPlayer()) {
+            } else if (Util.pageDirIsPlayer()) {
                 const playerName: string = Util.getPageLocation();
                 socket.emit("get_player_data", playerName, props.game);
                 socket.on("get_player_data_ret", (data: RaceData[], records: any[]) => {
@@ -63,16 +54,14 @@ export default (props: RaceTableProps): JSX.Element => {
                     setTableLabelCol2("Race");
                     setLabels(["", "Time", "Race", "Character", "Shrooms", "Country", "Date", "Length"]);
                 });
-            } else if (currentUrl && Util.onTrackList()) {
-                let cc_level: string = Util.pathIs('/mk8dx/200cc') ? '200cc' : '150cc'
-                console.log(cc_level)
-                socket.emit("get_records", props.game, cc_level);
+            } else if (Util.onTrackList()) {
+                socket.emit("get_records", props.game, Util.getPath().endsWith('200cc') ? '200cc' : '150cc');
                 socket.on("get_records_ret", (data: RaceData[]) => {
                     setRaceData(data);
                     setIsTrackList(true);
                     setLabels(["Track", "Record", "Player", "Length"]);
                 });
-            } else if (currentUrl && props.cc === "all") {
+            } else if (props.cc === "all") {
                 socket.emit("get_latest_records");
                 socket.on("get_latest_records_ret", (data: RaceData[]) => {
                     setRaceData(data);
@@ -86,7 +75,7 @@ export default (props: RaceTableProps): JSX.Element => {
         return () => {
             socket.off();
         };
-    }, [socket, props, currentUrl]);
+    }, [socket, props]);
 
     return (
         <div className={`mkr-table-wrapper ${Util.pageDirIsMK8() ? "gold" : ""}`}>
