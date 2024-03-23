@@ -13,10 +13,6 @@ body {
   background: #f2f6f9;
 }
 
-a:hover {
-  color: white;
-}
-
 ::-webkit-scrollbar {
   width: 2px;
 }
@@ -36,14 +32,20 @@ span {
 
 .bcontent .tabs div {
   position: relative;
-  top: 2px;
+  top: 4px;
   padding: 5px 10px;
   cursor: pointer;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
 
-.bcontent .tabs .active {
+.bcontent .tabs div:hover {
+  background: #eee;
+  color: black;
+  border-bottom: 2px solid #a9a9a9;
+}
+
+.bcontent .tabs .active, .bcontent .tabs .active:hover {
   border-bottom: 2px solid orange;
   background: #eee;
 }
