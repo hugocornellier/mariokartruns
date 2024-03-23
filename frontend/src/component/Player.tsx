@@ -4,9 +4,9 @@ import {Util} from "../utils/Util";
 
 export default function Player(props: any) {
     return (
-        <>
+        <div className="h-full w-full text-black p-7 ">
             <RaceTitle game={props.game} raceName={decodeURI(Util.getPageLocation())} />
-            <RaceTable game={props.game} raceName={""} />
-        </>
+            <RaceTable cc={props.cc} game={props.game} raceName={""} />
+        </div>
     )
 }

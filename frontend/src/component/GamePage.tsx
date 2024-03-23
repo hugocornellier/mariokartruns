@@ -15,7 +15,7 @@ export default function GamePage(props: any) {
     });
 
     return (
-        <div className="h-full w-full text-black">
+        <div className="h-full w-full text-black p-7 ">
             {props.game === "mk8dx" && <Tabs cc={cc} />}
             <RaceTitle game={props.game} raceName={"Track List"}/>
             <RaceTable cc={cc} game={props.game} raceName={""} />

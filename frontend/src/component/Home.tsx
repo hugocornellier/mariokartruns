@@ -2,7 +2,7 @@ import Race from "./Race/Race";
 
 export default function Home(props: any) {
     return (
-        <div className="text-black">
+        <div className="text-black h-full w-full p-7">
             <h1 className={'mb-5 text-2xl'}>
                 Welcome to MarioKartRuns!
             </h1>

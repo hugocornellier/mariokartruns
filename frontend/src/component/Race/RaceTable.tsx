@@ -1,85 +1,84 @@
+import React, { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import { SocketHelper } from "../../context/SocketHelper";
-import { useEffect, useState } from "react";
-import {Util} from "../../utils/Util";
+import { Util } from "../../utils/Util";
 import RaceTableHeader from "./RaceTableHeader";
 import RaceTableBody from "./RaceTableBody";
 
-export default function RaceTable(props: any) {
+interface RaceTableProps {
+    game: string;
+    cc: string;
+    raceName?: string;
+}
+
+interface RaceData {
+    [key: string]: any;
+}
+
+export default function RaceTable(props: RaceTableProps): JSX.Element {
     const [socket, setSocket] = useState<Socket>();
-    useEffect((): void => setSocket(SocketHelper.init()), []);
-    const [raceData, setRaceData] = useState<any[]>();
-    const [labels, setLabels] = useState<any[]>();
+    const [raceData, setRaceData] = useState<RaceData[]>();
+    const [labels, setLabels] = useState<string[]>([]);
     const [isTrackList, setIsTrackList] = useState<boolean>(false);
     const [tableLabelCol2, setTableLabelCol2] = useState<string>("Player");
+
     useEffect(() => {
-        if (!socket)
-            return;
-        if (Util.pageDirIsMK8OrMK8DX()) {
-            console.log(`I'm on a race page. Fetching data for ${props.game}, cc: ${props.cc}`);
-            socket.emit("get_race_data", props.raceName, props.game, props.cc);
-            socket.on("get_race_data_ret", (data: any) => setRaceData(data));
-            setLabels([
-                "",
-                "Time",
-                tableLabelCol2,
-                "Character",
-                "Shrooms",
-                "Country",
-                "Date",
-                "Length",
-            ]);
-        }
-        else if (Util.pageDirIsPlayer()) {
-            const playerName: string = Util.getPageLocation();
-            socket.emit("get_player_data", playerName, props.game);
-            socket.on("get_player_data_ret", (data: any, records: any) => {
-                for (const wr of data) {
-                    wr.active_wr = false
-                }
-                for (const wr of data) {
-                    for (const record of records) {
-                        if (wr.video_url === record.video_url) {
-                            wr.active_wr = true
-                            console.log(wr)
-                        }
-                    }
-                }
-                setRaceData(data);
-            });
-            setTableLabelCol2("Race");
-            setLabels([
-                "",
-                "Time",
-                "Race",
-                "Character",
-                "Shrooms",
-                "Country",
-                "Date",
-                "Length",
-            ]);
-        }
-        else if (Util.onTrackList()) {
-            socket.emit("get_records", props.game, props.cc);
-            socket.on("get_records_ret", (data: any) => setRaceData(data));
-            setIsTrackList(true);
-            setLabels(["Track", "Record", "Player", "Length"]);
-        }
-        else if (props.cc === 'all') {
-            console.log("Loading latest records!")
-            socket.emit("get_latest_records");
-            socket.on("get_latest_records_ret", (data: any) => {
-                setRaceData(data);
-            });
-            setLabels(["Game", "Track", "Record", "Player", "Date"]);
-        }
+        setSocket(SocketHelper.init());
+
+        return () => {
+            if (socket) {
+                socket.off();
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const fetchRaceData = () => {
+            if (Util.onRacePage()) {
+                socket.emit("get_race_data", props.raceName, props.game, props.cc);
+                socket.on("get_race_data_ret", (data: RaceData[]) => {
+                    setRaceData(data);
+                    setLabels(["", "Time", tableLabelCol2, "Character", "Shrooms", "Country", "Date", "Length"]);
+                });
+            } else if (Util.pageDirIsPlayer()) {
+                const playerName: string = Util.getPageLocation();
+                socket.emit("get_player_data", playerName, props.game);
+                socket.on("get_player_data_ret", (data: RaceData[], records: any[]) => {
+                    const updatedData = data.map((wr) => {
+                        wr.active_wr = records.some((record) => wr.video_url === record.video_url);
+                        return wr;
+                    });
+                    setRaceData(updatedData);
+                    setTableLabelCol2("Race");
+                    setLabels(["", "Time", "Race", "Character", "Shrooms", "Country", "Date", "Length"]);
+                });
+            } else if (Util.onTrackList()) {
+                socket.emit("get_records", props.game, props.cc);
+                socket.on("get_records_ret", (data: RaceData[]) => {
+                    setRaceData(data);
+                    setIsTrackList(true);
+                    setLabels(["Track", "Record", "Player", "Length"]);
+                });
+            } else if (props.cc === "all") {
+                socket.emit("get_latest_records");
+                socket.on("get_latest_records_ret", (data: RaceData[]) => {
+                    setRaceData(data);
+                    setLabels(["Game", "Track", "Record", "Player", "Date"]);
+                });
+            }
+        };
+
+        fetchRaceData();
+
         return () => {
             socket.off();
         };
-    }, [socket]);
+    }, [socket, props]);
 
     return (
-        <div className={(Util.pageDirIsMK8() ? "gold" : "") + " mkr-table-wrapper"}>
+        <div className={`mkr-table-wrapper ${Util.pageDirIsMK8() ? "gold" : ""}`}>
             {!raceData ? (
                 <div>Loading...</div>
             ) : (

@@ -1,6 +1,11 @@
 
 
+
 export module Util {
+
+    export function onRacePage() {
+        return pageDirIsMK8OrMK8DX() || pageDirIs('mk7');
+    }
 
     export const onTrackList = () => Util.onMK8RaceList() || Util.onMK8DXRaceList() || Util.onMK7RaceList();
 
