@@ -59,7 +59,7 @@ export default function RaceTable(props: any) {
                 "Length",
             ]);
         }
-        else if (Util.onMK8RaceList() || Util.onMK8DXRaceList()) {
+        else if (Util.onTrackList()) {
             socket.emit("get_records", props.game, props.cc);
             socket.on("get_records_ret", (data: any) => setRaceData(data));
             setIsTrackList(true);

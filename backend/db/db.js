@@ -35,25 +35,26 @@ module.exports = {
 
     // ["Game", "Track", "Record", "Player", "Date"]
     getLatestRecords: async function getLatestRecords(game) {
+        const tables = ['mk7', 'mk8', 'mk8dx'];
+        const sqlQuery = `
+            SELECT * FROM (
+                ${tables.map(table => `
+                    SELECT '${table}' AS table_name, race, time, player, date FROM ${table}
+                `).join(' UNION ALL ')}
+            ) AS combined_data
+            ORDER BY date DESC
+            LIMIT 50
+        `;
+
         return new Promise((resolve, reject) => {
-            db_conn.all(
-                `SELECT * FROM (
-                         SELECT 'mk8' AS table_name, race, time, player, date FROM mk8
-                         UNION ALL
-                         SELECT 'mk8dx' AS table_name, race, time, player, date FROM mk8dx
-                     ) AS combined_data
-                     ORDER BY date DESC
-                     LIMIT 50;
-                `,
-                [],
-                (err, rows) => {
-                    if (err) {
-                        reject(err);
-                    }
+            db_conn.all(sqlQuery, [], (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
                     resolve(rows);
                 }
-            )
-        })
+            });
+        });
     },
 
     deleteTable: async function deleteTable(table) {

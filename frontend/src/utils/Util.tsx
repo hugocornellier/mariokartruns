@@ -1,25 +1,23 @@
+
+
 export module Util {
+
+    export const onTrackList = () => Util.onMK8RaceList() || Util.onMK8DXRaceList() || Util.onMK7RaceList();
 
     const getPageData = (dirLevel: number) : string => {
         const split: string[] = String(window.location).split("/")
         return split[split.length - dirLevel].split("+").join(' ')
     }
 
-    const pageDirIs = (dir: string) : boolean => {
-        return getPageDir() === dir
-    }
+    const pageDirIs = (dir: string) : boolean => getPageDir() === dir
 
-    const pageLocIs = (loc: string) : boolean => {
-        return getPageLocation() === loc
-    }
+    const pageLocIs = (loc: string) : boolean => getPageLocation() === loc
 
     export const getPageLocation = () : string => {
         return getPageData(1)
     }
 
-    export const getPageDir = () : string => {
-        return getPageData(2)
-    }
+    export const getPageDir = () : string => getPageData(2)
 
     export const pageDirIsMK8 = () : boolean => {
         return pageDirIs('mk8')
@@ -38,6 +36,10 @@ export module Util {
 
     export const pageDirIsPlayer = () : boolean => {
         return pageDirIs('player')
+    }
+
+    export const onMK7RaceList = () : boolean => {
+        return pathIs("/mk7")
     }
 
     export const onMK8RaceList = () : boolean => {

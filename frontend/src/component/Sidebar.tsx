@@ -17,11 +17,14 @@ export default class Sidebar extends Component<{ children: any, isActive: any }>
                                 Games
                             </b>
                         </div>
+                        <div className="link" onClick={() => Util.goToPage("/mk8dx")}>
+                            Mario Kart 8 Deluxe
+                        </div>
                         <div className="link" onClick={() => Util.goToPage("/mk8")}>
                             Mario Kart 8
                         </div>
-                        <div className="link" onClick={() => Util.goToPage("/mk8dx")}>
-                            Mario Kart 8 Deluxe
+                        <div className="link" onClick={() => Util.goToPage("/mk7")}>
+                            Mario Kart 7
                         </div>
                     </div>
                 )}

@@ -37,8 +37,9 @@ export default function Navigation() {
                 </>
             ),
         },
-        ...createGameRoutes("mk8"),
         ...createGameRoutes("mk8dx"),
+        ...createGameRoutes("mk8"),
+        ...createGameRoutes("mk7"),
     ]);
 
     return (
