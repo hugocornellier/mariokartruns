@@ -42,7 +42,7 @@ module.exports = {
                     SELECT '${table}' AS table_name, race, time, player, date FROM ${table}
                 `).join(' UNION ALL ')}
             ) AS combined_data
-            ORDER BY date DESC
+            ORDER BY date DESC, time
             LIMIT 50
         `;
 
