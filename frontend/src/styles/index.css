@@ -96,8 +96,4 @@ span {
   .hide-on-mobile {
     display: none;
   }
-
-  .bcontent {
-    padding: 1.25rem;
-  }
 }
