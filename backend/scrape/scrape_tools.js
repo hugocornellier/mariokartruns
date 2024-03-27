@@ -3,15 +3,15 @@ const parser = require("node-html-parser");
 const db = require("../db/db");
 
 const formatDate = date => {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
 
 const removeYouTubeLinksFromArray = a => a.filter(i => !i.includes("youtube.com/") && !i.includes("youtu.be/"));
 const removeDuplicatesFromArray = arr => arr.filter((value, index) => arr.indexOf(value) === index);
+const isNumber = value => typeof value === 'number' && isFinite(value);
 
 async function fetchHTML(url) {
     try {
@@ -27,80 +27,88 @@ async function fetchHTML(url) {
     }
 }
 
-async function getRaceRecords(race_url, game, race_id) {
+const getRaceRecords = async (race_url, game, race_id) => {
+    const getCellContent = (cell_count, matchingCell, cell, rowVal) => {
+        return (cell_count === matchingCell) ? cell.textContent.trim() : rowVal;
+    };
+
     try {
-        const rows = [];
         const html = await fetchHTML(race_url);
-        let cup = ""
-        const needle = "&cup="
-        if (race_url.includes(needle)) {
-            cup = race_url.split(needle)[1]
-        }
         if (!html) {
             throw new Error("Error getting HTML.");
         }
+
+        const htmlEl = parser.parse(html);
+        const race = htmlEl.querySelectorAll('h2')[0].textContent;
+        const cup = race_url.includes("&cup=") ? race_url.split("&cup=")[1] : null;
         const cc = race_url.includes("&m=200") ? "200cc" : "150cc";
-        const table = parser.parse(html).querySelectorAll('table')[2];
-        let atFirstRow = true;
-        for (const r of table.querySelectorAll('tr')) {
-            if (!atFirstRow) {
-                const row = {};
-                row['cup'] = cup
-                let cell_count = 0;
-                for (const c of r.querySelectorAll('td')) {
-                    row['race'] = parser.parse(html).querySelectorAll('h2')[0].textContent;
-                    row['race_id'] = race_id;
-                    row['cc'] = cc;
-                    row['date'] = (cell_count === 0) ? c.textContent.trim() : row['date'];
-                    row['player'] = (cell_count === 2) ? c.textContent.trim() : row['player'];
-                    row['days'] = (cell_count === 4) ? c.textContent.trim() : row['days'];
-                    row['lap1'] = (cell_count === 5) ? c.textContent.trim() : row['lap1'];
-                    row['lap2'] = (cell_count === 6) ? c.textContent.trim() : row['lap2'];
-                    row['lap3'] = (cell_count === 7) ? c.textContent.trim() : row['lap3'];
-                    if (row['race'] === "GCN Baby Park") {
-                        console.log("BABY PARK!");
-                    }
-                    row['coins'] = (cell_count === 8) ? c.textContent.trim() : row['coins'];
-                    row['shrooms'] = (cell_count === 9) ? c.textContent.trim() : row['shrooms'];
-                    row['character'] = (cell_count === 10) ? c.textContent.trim() : row['character'];
-                    row['kart'] = (cell_count === 11) ? c.textContent.trim() : row['kart'];
-                    row['tires'] = (cell_count === 12) ? c.textContent.trim() : row['tires'];
-                    row['glider'] = (cell_count === 13) ? c.textContent.trim() : row['glider'];
-                    if (cell_count === 1) {
-                        const el = parser.parse(c.innerHTML);
-                        const a_el = el.querySelector('a');
-                        const img_el = el.querySelector('img');
-                        const rawAttrs = a_el ? a_el.rawAttrs : null;
-                        const rawAttrsImg = img_el ? img_el.rawAttrs : null;
-                        row['time'] = c.textContent.trim();
-                        row['video_url'] = rawAttrs ? rawAttrs.split('"')[1].trim() : 0;
-                        row['controller'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : "default";
-                    } else if (cell_count === 3) {
-                        const el = parser.parse(c.innerHTML);
-                        const img_el = el.querySelector('img');
-                        const rawAttrsImg = img_el ? img_el.rawAttrs : null;
-                        row['nation'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : 0;
-                    }
-                    cell_count++;
+        const table = htmlEl.querySelectorAll('table')[2];
+        const tableRows = table.querySelectorAll('tr');
+
+        const rows = tableRows.slice(1).map(tableRow => {
+            let row = { race, race_id, cup, cc };
+            let cellCount = 0;
+            for (const cell of tableRow.querySelectorAll('td')) {
+                row['date'] = getCellContent(cellCount, 0, cell, row.date);
+                row['player'] = getCellContent(cellCount, 2, cell, row.player);
+                row['days'] = getCellContent(cellCount, 4, cell, row.days);
+                row['lap1'] = getCellContent(cellCount, 5, cell, row.lap1);
+                row['lap2'] = getCellContent(cellCount, 6, cell, row.lap2);
+                row['lap3'] = getCellContent(cellCount, 7, cell, row.lap3);
+                row['coins'] = getCellContent(cellCount, 8, cell, row.coins);
+                row['shrooms'] = getCellContent(cellCount, 9, cell, row.shrooms);
+                row['character'] = getCellContent(cellCount, 10, cell, row.character);
+                row['kart'] = getCellContent(cellCount, 11, cell, row.kart);
+                row['tires'] = getCellContent(cellCount, 12, cell, row.tires);
+                row['glider'] = getCellContent(cellCount, 13, cell, row.glider);
+
+                if (cellCount === 1) {
+                    const el = parser.parse(cell.innerHTML);
+                    const a_el = el.querySelector('a');
+                    const img_el = el.querySelector('img');
+                    const rawAttrs = a_el ? a_el.rawAttrs : null;
+                    const rawAttrsImg = img_el ? img_el.rawAttrs : null;
+                    row['time'] = cell.textContent.trim();
+                    row['video_url'] = rawAttrs ? rawAttrs.split('"')[1].trim() : 0;
+                    row['controller'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : "default";
+                } else if (cellCount === 3) {
+                    const el = parser.parse(cell.innerHTML);
+                    const img_el = el.querySelector('img');
+                    const rawAttrsImg = img_el ? img_el.rawAttrs : null;
+                    row['nation'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : 0;
                 }
-                const d = new Date(row['date']);
-                row['date'] = (!isNaN(d.getTime())) ? formatDate(d) : '0: ' + row['date'];
-                rows.push(row);
-            } else {
-                atFirstRow = !atFirstRow;
+                cellCount++;
             }
-        }
+            const dateIsNan = isNaN(new Date(row['date']).getTime());
+            row['date'] = (!dateIsNan) ? row['date'] : '0: ' + row['date'];
+            return row;
+        });
+
         return rows.filter(value => Object.keys(value).length !== 0);
     } catch (error) {
         console.error(error);
         throw error;
     }
-}
+};
 
 module.exports = {
     getAndInsertRecords: async function getAndInsertRecords(race_url, table, race_id) {
         try {
             console.log("Fetching records at URL: " + race_url);
+            if (race_id === null) {
+                let raceName = race_url.split("?track=")[1].split("+").join(' ')
+                if (raceName.endsWith('&m=200')) {
+                    raceName = raceName.slice(0, -6)
+                }
+                raceName = decodeURI(raceName.trim())
+                const raceID = await db.getRaceIdByRaceName(table, raceName)
+                if (isNumber(raceID)) {
+                    race_id = raceID;
+                    console.log(`Found race ID: ${race_id}`)
+                } else {
+                    return;
+                }
+            }
             const rows = await getRaceRecords(race_url, table, race_id);
             console.log("Race records received! Attempting to insert all rows.");
             console.log(rows);
@@ -112,7 +120,7 @@ module.exports = {
                 try {
                     await db.insertEntry(row, table);
                 } catch (e) {
-                    // Handle insertion error if needed
+                    console.log("Error: " + e.message);
                 }
             }
             console.log("Done inserting...");
@@ -132,6 +140,39 @@ module.exports = {
             }
             race_id = race_id + (game === 'mk8dx' ? 0.5 : 1)
         }
+    },
+
+    scrapeHomePage: async function scrapeHomePage() {
+        return new Promise(async (resolve, reject) => {
+            const html = parser.parse(await fetchHTML('https://mkwrs.com/'))
+            const wrTable = html.querySelectorAll('.wr')[0];
+            const tableRows = wrTable.querySelectorAll('tr').slice(1) // Remove header row
+            for (const tableRow of tableRows) {
+                console.log()
+                const tableDataCells = tableRow.querySelectorAll('td').slice(1) // Removes date row - we won't use it
+                let count = 1
+                let toScrape = false
+                let game = null
+                let raceURL = null
+                for (const tableDataCell of tableDataCells) {
+                    if (count === 1) {
+                        game = tableDataCell.querySelector('a')._attrs.href.slice(0, -1).toLowerCase()
+                        if (['mk7', 'mk8', 'mk8dx'].includes(game)) {
+                            toScrape = true
+                        }
+                    } else if (count === 2 && toScrape)  {
+                        raceURL = tableDataCell.querySelector('a')._attrs.href
+                        raceURL = "https://mkwrs.com/" + raceURL
+                        await this.getAndInsertRecords(
+                            raceURL,
+                            game,
+                            null
+                        )
+                    }
+                    count += 1
+                }
+            }
+        })
     },
 
     getRaceURLs: async function getRaceURLs(game) {

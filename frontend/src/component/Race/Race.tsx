@@ -4,12 +4,7 @@ import RaceTable from "./RaceTable";
 import { Util } from "../../utils/Util";
 import Tabs from "../Tabs";
 
-interface RaceProps {
-    game: string;
-    cc: string;
-}
-
-export default (props: RaceProps): JSX.Element => {
+export default (props: any): JSX.Element => {
     const raceName: string = Util.getRaceName();
 
     return (

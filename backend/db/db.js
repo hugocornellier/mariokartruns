@@ -143,6 +143,29 @@ module.exports = {
         })
     },
 
+    getRaceIdByRaceName: async function getRaceIdByRaceName(game, raceName) {
+        return new Promise((resolve, reject) => {
+            db_conn.all(
+                `SELECT * 
+                FROM ${game} 
+                WHERE race = ? 
+                ORDER BY date ASC 
+                LIMIT 1`,
+                [raceName],
+                (err, rows) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    if (rows[0] && rows[0].race_id) {
+                        resolve(rows[0].race_id);
+                    } else {
+                        reject("An error happened fetching raceID.")
+                    }
+                }
+            )
+        })
+    },
+
     getAllEntriesByGame: async function getAllEntriesByGame(game) {
         return new Promise((resolve, reject) => {
             db_conn.all(
