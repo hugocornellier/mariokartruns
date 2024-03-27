@@ -11,9 +11,7 @@ interface RouteConfig {
     element: JSX.Element;
 }
 
-interface AppProps {}
-
-export default function App(props: AppProps) {
+export default function App() {
     const [activeSidebar, setActiveSidebar] = useState(true);
 
     const onToggleSidebar = () => setActiveSidebar(!activeSidebar);
