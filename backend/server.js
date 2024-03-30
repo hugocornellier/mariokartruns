@@ -45,7 +45,7 @@ server.listen(
             //    52
             // )
             await scraper.scrapeAllRacesByGame(
-                'mk7',
+                'mk8dx',
                 true,
                 1
             )
