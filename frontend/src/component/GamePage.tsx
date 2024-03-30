@@ -8,7 +8,7 @@ export default function GamePage(props: any) {
     const [cc, setCC] = useState<string>("150cc");
 
     useEffect(() => {
-       const pageLoc: string = Util.getPageLocation()
+        const pageLoc: string = Util.getPageLocation()
         if (pageLoc === "200cc") {
             setCC("200cc")
         }
@@ -18,7 +18,7 @@ export default function GamePage(props: any) {
         <div className="h-full w-full text-black p-7 ">
             {props.game === "mk8dx" && <Tabs cc={cc} />}
             <RaceTitle game={props.game} raceName={"Track List"}/>
-            <RaceTable cc={cc} game={props.game} raceName={""} />
+            <RaceTable socket={props.socket} cc={cc} game={props.game} raceName={""} />
         </div>
     );
 }

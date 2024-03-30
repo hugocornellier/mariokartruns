@@ -1,47 +1,25 @@
-import React, { useState } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import GamePage from "./component/GamePage";
-import Race from "./component/Race/Race";
-import Player from "./component/Player";
-import Home from "./component/Home";
-import ContentLayout from "./component/ContentLayout";
+import React, { useEffect, useState } from "react";
+import { Socket } from "socket.io-client";
+import { SocketHelper } from "./context/SocketHelper";
+import Router from "./component/Router";
 
-interface RouteConfig {
-    path: string;
-    element: JSX.Element;
-}
+function App() {
+    const [socket, setSocket] = useState<Socket | undefined>();
 
-export default function App() {
-    const [activeSidebar, setActiveSidebar] = useState(true);
+    useEffect(() => {
+        const initializedSocket = SocketHelper.init();
+        setSocket(initializedSocket);
 
-    const onToggleSidebar = () => setActiveSidebar(!activeSidebar);
-
-    const createRouteElement = (
-        component: JSX.Element,
-        game: string,
-        cc: string = '150cc'
-    ): JSX.Element => (
-        <ContentLayout activeSidebar={activeSidebar} onToggleSidebar={onToggleSidebar}>
-            {React.cloneElement(component, { game, cc })}
-        </ContentLayout>
-    );
-
-    const routes: RouteConfig[] = [
-        { path: "/", element: createRouteElement(<Home />, '') },
-        ...['mk8dx', 'mk8', 'mk7'].flatMap(game => [
-            { path: `/${game}`, element: createRouteElement(<GamePage />, game) },
-            { path: `/${game}/200cc`, element: createRouteElement(<GamePage />, game, '200cc') },
-            { path: `/${game}/:race`, element: createRouteElement(<Race />, game) },
-            { path: `/${game}/:race/200cc`, element: createRouteElement(<Race />, game, '200cc') },
-            { path: `/${game}/player/:player`, element: createRouteElement(<Player />, game) }
-        ])
-    ];
-
-    const router = createBrowserRouter(routes);
+        return () => {
+            if (socket) {
+                socket.off();
+            }
+        };
+    }, []);
 
     return (
-        <div className="bcontent w-full">
-            <RouterProvider router={router} />
-        </div>
+        <Router socket={socket} />
     );
 }
+
+export default App;

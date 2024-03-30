@@ -1,9 +1,14 @@
-import {Link} from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 
-export default function Header(props: any) {
+interface HeaderProps {
+    sidebarOnClick: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ sidebarOnClick }) => {
     return (
         <div className="mkr-header items-center p-4 flex flex-row w-full text-white">
-            <div onClick={props.sidebarOnClick} className={"sidebar-btn p-2 mr-4 cursor-pointer border-2 rounded-lg"}>
+            <div onClick={sidebarOnClick} className={"sidebar-btn p-2 mr-4 cursor-pointer border-2 rounded-lg"}>
                 ≡
             </div>
             <Link to={"/"}>
@@ -17,5 +22,7 @@ export default function Header(props: any) {
                 </div>
             </Link>
         </div>
-    )
+    );
 }
+
+export default Header;

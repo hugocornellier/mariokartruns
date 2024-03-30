@@ -9,6 +9,7 @@ interface RaceTableProps {
     game: string;
     cc: string;
     raceName?: string;
+    socket: any;
 }
 
 interface RaceData {
@@ -16,21 +17,11 @@ interface RaceData {
 }
 
 export default (props: RaceTableProps): JSX.Element => {
-    const [socket, setSocket] = useState<Socket>();
     const [raceData, setRaceData] = useState<RaceData[]>();
     const [labels, setLabels] = useState<string[]>([]);
     const [isTrackList, setIsTrackList] = useState<boolean>(false);
     const [tableLabelCol2, setTableLabelCol2] = useState<string>("Player");
-
-    useEffect(() => {
-        setSocket(SocketHelper.init());
-
-        return () => {
-            if (socket) {
-                socket.off();
-            }
-        };
-    }, []);
+    const socket = props.socket;
 
     useEffect(() => {
         if (!socket) return;

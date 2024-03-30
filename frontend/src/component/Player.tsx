@@ -6,7 +6,7 @@ export default function Player(props: any) {
     return (
         <div className="h-full w-full text-black p-7 ">
             <RaceTitle game={props.game} raceName={decodeURI(Util.getPageLocation())} />
-            <RaceTable cc={props.cc} game={props.game} raceName={""} />
+            <RaceTable socket={props.socket} cc={props.cc} game={props.game} raceName={""} />
         </div>
     )
 }

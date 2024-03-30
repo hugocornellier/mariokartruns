@@ -1,7 +1,7 @@
 import React from "react";
 import Race from "./Race/Race";
 
-export default () => (
+export default (props: any) => (
     <div className="text-black h-full w-full p-7">
         <h1 className="mb-5 text-2xl">
             Welcome to MarioKartRuns!
@@ -12,6 +12,6 @@ export default () => (
         <h1 className="mb-5 text-xl mt-5">
             Latest Records
         </h1>
-        <Race cc="all" game="all" />
+        <Race socket={props.socket} cc="all" game="all" />
     </div>
 )

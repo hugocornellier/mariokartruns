@@ -1,4 +1,3 @@
-// ContentLayout.tsx
 import React, { ReactNode } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
@@ -6,17 +5,19 @@ import Sidebar from "./Sidebar";
 interface ContentLayoutProps {
     children: ReactNode;
     activeSidebar: boolean;
-    onToggleSidebar: () => void;
+    toggleSidebar: () => void;
 }
 
-export default function ContentLayout({ children, activeSidebar, onToggleSidebar }: ContentLayoutProps) {
+const ContentLayout: React.FC<ContentLayoutProps> = ({ children, activeSidebar, toggleSidebar }) => {
     return (
-        <>
-            <Header sidebarOnClick={onToggleSidebar} />
+        <div className="bcontent w-full">
+            <Header sidebarOnClick={toggleSidebar} />
             <div className="flex flex-row h-full w-full">
                 <Sidebar isActive={activeSidebar} />
                 {children}
             </div>
-        </>
+        </div>
     );
 }
+
+export default ContentLayout;
