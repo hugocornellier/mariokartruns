@@ -10,11 +10,11 @@ import {DefaultEventsMap} from "socket.io/dist/typed-events";
 
 interface RouteConfig {
     path: string;
-    element: JSX.Element;
+    element: React.ReactElement | null;
 }
 
 interface RouterProps {
-    socket: Socket<DefaultEventsMap, DefaultEventsMap> | undefined; // Type should be adjusted according to the actual type of socket
+    socket: Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
 }
 
 const Router: React.FC<RouterProps> = ({ socket }) => {
@@ -26,7 +26,7 @@ const Router: React.FC<RouterProps> = ({ socket }) => {
         component: JSX.Element,
         game: string,
         cc: string = '150cc'
-    ): JSX.Element => (
+    ): React.ReactElement | null => (
         <ContentLayout activeSidebar={activeSidebar} toggleSidebar={toggleSidebar}>
             {React.cloneElement(component, { game, cc, socket })}
         </ContentLayout>

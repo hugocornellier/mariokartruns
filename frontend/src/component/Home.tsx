@@ -1,7 +1,11 @@
 import React from "react";
 import Race from "./Race/Race";
 
-export default (props: any) => (
+interface HomeProps {
+    socket: any; // Adjust the type according to the actual type of socket
+}
+
+const Home: React.FC<HomeProps> = ({ socket }) => (
     <div className="text-black h-full w-full p-7">
         <h1 className="mb-5 text-2xl">
             Welcome to MarioKartRuns!
@@ -12,6 +16,8 @@ export default (props: any) => (
         <h1 className="mb-5 text-xl mt-5">
             Latest Records
         </h1>
-        <Race socket={props.socket} cc="all" game="all" />
+        <Race socket={socket} cc="all" game="all" />
     </div>
-)
+);
+
+export default Home;

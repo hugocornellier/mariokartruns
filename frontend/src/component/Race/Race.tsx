@@ -4,7 +4,7 @@ import RaceTable from "./RaceTable";
 import { Util } from "../../utils/Util";
 import Tabs from "../Tabs";
 
-export default (props: any): JSX.Element => {
+export default (props: any): React.ReactElement | null => {
     const raceName: string = Util.getRaceName();
 
     return (

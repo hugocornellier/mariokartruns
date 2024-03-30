@@ -16,7 +16,7 @@ interface RaceData {
     [key: string]: any;
 }
 
-export default (props: RaceTableProps): JSX.Element => {
+export default (props: RaceTableProps): React.ReactElement | null => {
     const [raceData, setRaceData] = useState<RaceData[]>();
     const [labels, setLabels] = useState<string[]>([]);
     const [isTrackList, setIsTrackList] = useState<boolean>(false);
