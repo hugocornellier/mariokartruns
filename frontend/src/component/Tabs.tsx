@@ -7,10 +7,12 @@ interface TabsProps {
 }
 
 const Tabs: React.FC<TabsProps> = () => {
+    const _200ccActive: boolean = Util.getPath().endsWith('200cc');
+
     return (
         <div className="tabs flex flex-row mb-6 h-10">
-            <TabButton cc="150cc" active={!Util.getPath().endsWith('200cc')} />
-            <TabButton cc="200cc" active={Util.getPath().endsWith('200cc')} />
+            <TabButton cc="150cc" active={!_200ccActive} />
+            <TabButton cc="200cc" active={_200ccActive} />
         </div>
     );
 };
@@ -21,8 +23,12 @@ interface TabButtonProps {
 }
 
 const TabButton: React.FC<TabButtonProps> = ({ cc, active }) => {
+    const raceUrl: string = Util.onTrackList()
+        ? `/mk8dx${ cc === '200cc' ? '/200cc' : '' }`
+        : `/mk8dx/${ Util.prepareURL(Util.getRaceName()) }${ cc === '200cc' ? '/200cc' : '' }`;
+
     return (
-        <Link to={`/mk8dx${cc === '200cc' ? '/200cc' : ''}`}>
+        <Link to={raceUrl}>
             <div className={`mr-5 ${active ? 'active' : ''}`}>
                 {cc}
             </div>

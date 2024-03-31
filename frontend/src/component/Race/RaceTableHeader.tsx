@@ -1,20 +1,21 @@
-export default function RaceTableHeader(props: any) {
-    return (
-        <>
-            <thead>
-                <tr>
-                {props.labels.map(
-                    (record: {
-                        toString: () => string | null },
-                        i: number
-                    ) => (
-                        <th key={i}>
-                            {record.toString()}
-                        </th>
-                    )
-                )}
-                </tr>
-            </thead>
-        </>
-    )
+import React from "react";
+
+interface RaceTableHeaderProps {
+    labels: string[];
 }
+
+const RaceTableHeader: React.FC<RaceTableHeaderProps> = ({ labels }) => {
+    return (
+        <thead>
+            <tr>
+                {labels.map((label, index) => (
+                    <th key={index}>
+                        {label}
+                    </th>
+                ))}
+            </tr>
+        </thead>
+    );
+}
+
+export default RaceTableHeader;

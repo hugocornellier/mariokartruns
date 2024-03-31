@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Socket } from "socket.io-client";
-import { SocketHelper } from "../../context/SocketHelper";
-import { Util } from "../../utils/Util";
+import React, {useEffect, useState} from "react";
+import {Socket} from "socket.io-client";
+import {Util} from "../../utils/Util";
 import RaceTableHeader from "./RaceTableHeader";
 import RaceTableBody from "./RaceTableBody";
+import {DefaultEventsMap} from "socket.io/dist/typed-events";
 
 interface RaceTableProps {
     game: string;
     cc: string;
     raceName?: string;
-    socket: any;
+    socket: Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
 }
 
 interface RaceData {
@@ -38,7 +38,9 @@ export default (props: RaceTableProps): React.ReactElement | null => {
                 socket.emit("get_player_data", playerName, props.game);
                 socket.on("get_player_data_ret", (data: RaceData[], records: any[]) => {
                     const updatedData = data.map((wr) => {
-                        wr.active_wr = records.some((record) => wr.video_url === record.video_url);
+                        wr.active_wr = records.some(record => {
+                            return wr.video_url === record.video_url;
+                        });
                         return wr;
                     });
                     setRaceData(updatedData);

@@ -1,63 +1,41 @@
-import {Link} from "react-router-dom";
-import {Util} from "../../utils/Util";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCrown, faVideoCamera} from "@fortawesome/free-solid-svg-icons";
-import {useEffect} from "react";
-
-interface RaceRecord {
-    cc: string;
-    table_name: string;
-    days: any;
-    active_wr: boolean;
-    date: string;
-    nation: string;
-    shrooms: string;
-    character: string;
-    video_url: any;
-    player: string;
-    time: string;
-    race: string;
-}
+import React from "react";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCrown, faVideoCamera } from "@fortawesome/free-solid-svg-icons";
+import { Util } from "../../utils/Util";
 
 interface TableRowProps {
-    record: RaceRecord;
+    record: any;
     game: string;
     cc?: string;
+    isTrackList: boolean;
+    tableLabelCol2: string;
 }
 
-export default function RaceTableBody(props: any) {
-    useEffect(() => {
-        console.log(props.raceData)
-    })
+interface RaceTableBodyProps {
+    raceData: any[];
+    game: string;
+    cc?: string;
+    isTrackList: boolean;
+    tableLabelCol2: string;
+}
+
+const RaceTableBody: React.FC<RaceTableBodyProps> = ({ raceData, game, cc, isTrackList, tableLabelCol2 }) => {
     return (
-        <>
-            <tbody>
-            {props.raceData.map((record: {
-                table_name: string;
-                days: any;
-                active_wr: boolean;
-                date: string;
-                nation: string;
-                shrooms: string;
-                character: string;
-                video_url: any;
-                player: string;
-                time: string;
-                race: string;
-                cc: string;
-            }, i: number) => (
-                <>
-                    {props.isTrackList && <TrackListRow key={i} record={record} game={props.game} cc={props.cc} />}
-                    {props.cc === 'all' && <AllRow key={i} record={record} />}
-                    {(Util.onRacePage() || Util.pageDirIsPlayer()) && <RacePageRow i={i} key={i} record={record} game={props.game} tableLabelCol2={props.tableLabelCol2} />}
-                </>
+        <tbody>
+            {raceData.map((record, i) => (
+                <React.Fragment key={i}>
+                    {isTrackList && <TrackListRow record={record} game={game} cc={cc} isTrackList={isTrackList} tableLabelCol2={tableLabelCol2} />}
+                    {cc === 'all' && <AllRow cc={cc} record={record} />}
+                    {(Util.onRacePage() || Util.pageDirIsPlayer()) && <RacePageRow i={i} record={record} game={game} tableLabelCol2={tableLabelCol2} />}
+                </React.Fragment>
             ))}
-            </tbody>
-        </>
-    )
+        </tbody>
+    );
 }
 
-function TrackListRow({ record, game, cc }: TableRowProps) {
+
+const TrackListRow: React.FC<TableRowProps> = ({ record, game, cc }) => {
     return (
         <tr>
             <td data-label="Race">
@@ -76,7 +54,8 @@ function TrackListRow({ record, game, cc }: TableRowProps) {
     );
 }
 
-function AllRow({ record }: { record: RaceRecord }) {
+const AllRow: React.FC<{ record: any; cc: string; }> = ({ record, cc }) => {
+    console.log(record)
     return (
         <tr>
             <td data-label="Date">{record.date}</td>
@@ -84,6 +63,7 @@ function AllRow({ record }: { record: RaceRecord }) {
             <td data-label="Race">
                 <Link to={`/${record.table_name}/${record.race.replace(/ /g, "+")}${record.cc === '200cc' ? '/200cc' : ''}`}>
                     {record.race}
+                    {(record.table_name == "mk8dx") && (" (" + record.cc + ")") }
                 </Link>
             </td>
             <td data-label="Record">{record.time}</td>
@@ -96,7 +76,7 @@ function AllRow({ record }: { record: RaceRecord }) {
     );
 }
 
-function RacePageRow({ i, record, game, tableLabelCol2 }: { i: number; record: RaceRecord; game: string; tableLabelCol2: string }) {
+const RacePageRow: React.FC<{ i: number; record: any; game: string; tableLabelCol2: string }> = ({ i, record, game, tableLabelCol2 }) => {
     return (
         <tr className={(Util.pageDirIsMK8OrMK8DX() && i === 0) || record.active_wr ? "gold-tr" : ""}>
             <td data-label="Crown">
@@ -106,13 +86,14 @@ function RacePageRow({ i, record, game, tableLabelCol2 }: { i: number; record: R
                 {record.video_url !== "0" && <FontAwesomeIcon className="ml-1.5" icon={faVideoCamera} />}
             </td>
             <td data-label="Time">
-                {record.video_url !== "0" ? (
-                    <Link target="_blank" className="cursor-pointer" to={record.video_url}>
-                        {record.time}
-                    </Link>
-                ) : (
-                    <>{record.time}</>
-                )}
+                {record.video_url !== "0"
+                    ? (
+                        <Link target="_blank" className="cursor-pointer" to={record.video_url}>
+                            {record.time}
+                        </Link>
+                    )
+                    : record.time
+                }
             </td>
             <td data-label={tableLabelCol2}>
                 <Link
@@ -134,3 +115,5 @@ function RacePageRow({ i, record, game, tableLabelCol2 }: { i: number; record: R
         </tr>
     );
 }
+
+export default RaceTableBody;

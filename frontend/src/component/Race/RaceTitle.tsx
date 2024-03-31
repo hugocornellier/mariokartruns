@@ -1,29 +1,35 @@
-import {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 
-export default function RaceTitle(props: any) {
-    const [game, setGame] = useState<string>("");
+interface RaceTitleProps {
+    game: string;
+    raceName: string;
+}
+
+const RaceTitle: React.FC<RaceTitleProps> = ({ game, raceName }) => {
+    const [gameState, setGameState] = useState<string>("");
+
     useEffect(() => {
-        if (props.game !== undefined) {
-            console.log("props.game = " + props.game)
-            setGame(props.game.toString())
-        } else {
-            console.log("Undefined")
+        if (game !== undefined) {
+            setGameState(game.toString());
         }
-    })
+    }, [game]);
+
     return (
         <div className="race-title text-black">
             <span
-                className={game + " game-id mr-5 rounded-md "}
+                className={gameState + " game-id mr-5 rounded-md"}
                 style={{
                     display: "inline-block",
                     padding: "5px 10px"
                 }}
             >
-                {game.toUpperCase()}
+                {gameState.toUpperCase()}
             </span>
             <span style={{ fontSize: "20px", display: "inline-block" }}>
-                {props.raceName.length > 0 ? props.raceName : "..."}
+                {raceName.length > 0 ? raceName : "..."}
             </span>
         </div>
     );
 }
+
+export default RaceTitle;

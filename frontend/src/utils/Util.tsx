@@ -48,33 +48,33 @@ export module Util {
     }
 
     export const onMK8RaceList = () : boolean => {
-        return pathIs("/mk8")
+        return pathIs("/mk8");
     }
 
     export const onMK8DXRaceList = () : boolean => {
-        return pathIs("/mk8dx") || pathIs("/mk8dx/200cc")
+        return pathIs("/mk8dx") || pathIs("/mk8dx/200cc");
     }
 
     export const goToPage = (page: string) : void => {
-        window.location.replace(page)
+        window.location.replace(page);
     }
 
-    export const getRaceName = () => {
+    export const getRaceName = (): string => {
         if (pageLocIs('200cc')) {
             return getPageDir();
         }
-        return getPageLocation()
+        return getPageLocation();
     };
 
     export function getPath(): string {
         return window.location.pathname;
     }
 
-    export const goToHome = () : void => {
-        goToPage("/")
+    export const pathIs = (path: string): boolean => {
+        return getPath() === path;
     }
 
-    export const pathIs = (path: string) : boolean => {
-        return getPath() === path
+    export const prepareURL = (url: string): string => {
+        return url.replace(/ /g, "+");
     }
 }

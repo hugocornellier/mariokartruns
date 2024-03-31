@@ -39,7 +39,7 @@ module.exports = {
         const sqlQuery = `
             SELECT * FROM (
                 ${tables.map(table => `
-                    SELECT '${table}' AS table_name, race, time, player, date FROM ${table}
+                    SELECT '${table}' AS table_name, race, time, player, cc, date FROM ${table}
                 `).join(' UNION ALL ')}
             ) AS combined_data
             ORDER BY date DESC, time

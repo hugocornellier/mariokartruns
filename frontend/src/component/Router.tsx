@@ -5,8 +5,8 @@ import Race from "./Race/Race";
 import Player from "./Player";
 import Home from "./Home";
 import ContentLayout from "./ContentLayout";
-import {Socket} from "socket.io-client";
-import {DefaultEventsMap} from "socket.io/dist/typed-events";
+import { Socket } from "socket.io-client";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
 interface RouteConfig {
     path: string;
@@ -23,7 +23,7 @@ const Router: React.FC<RouterProps> = ({ socket }) => {
     const toggleSidebar = () => setActiveSidebar(prevState => !prevState);
 
     const createRouteElement = (
-        component: JSX.Element,
+        component: React.ReactElement,
         game: string,
         cc: string = '150cc'
     ): React.ReactElement | null => (
@@ -32,22 +32,37 @@ const Router: React.FC<RouterProps> = ({ socket }) => {
         </ContentLayout>
     );
 
+    const games = ['mk8dx', 'mk8', 'mk7'];
+
     const routes: RouteConfig[] = [
         { path: "/", element: createRouteElement(<Home socket={socket} />, '') },
-        ...['mk8dx', 'mk8', 'mk7'].flatMap(game => [
-            { path: `/${game}`, element: createRouteElement(<GamePage />, game) },
-            { path: `/${game}/200cc`, element: createRouteElement(<GamePage />, game, '200cc') },
-            { path: `/${game}/:race`, element: createRouteElement(<Race />, game) },
-            { path: `/${game}/:race/200cc`, element: createRouteElement(<Race />, game, '200cc') },
-            { path: `/${game}/player/:player`, element: createRouteElement(<Player />, game) }
+        ...games.flatMap(game => [
+            {
+                path: `/${game}`,
+                element: createRouteElement(<GamePage />, game)
+            },
+            {
+                path: `/${game}/200cc`,
+                element: createRouteElement(<GamePage />, game, '200cc')
+            },
+            {
+                path: `/${game}/:race`,
+                element: createRouteElement(<Race />, game)
+            },
+            {
+                path: `/${game}/:race/200cc`,
+                element: createRouteElement(<Race />, game, '200cc')
+            },
+            {
+                path: `/${game}/player/:player`,
+                element: createRouteElement(<Player />, game)
+            }
         ])
     ];
 
     const router = createBrowserRouter(routes);
 
-    return (
-        <RouterProvider router={router} />
-    );
+    return <RouterProvider router={router} />;
 }
 
 export default Router;
