@@ -14,7 +14,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isActive }) => {
     const games: Game[] = [
         { name: "Mario Kart 8 Deluxe", path: "/mk8dx" },
         { name: "Mario Kart 8", path: "/mk8" },
-        { name: "Mario Kart 7", path: "/mk7" }
+        { name: "Mario Kart 7", path: "/mk7" },
+        { name: "Mario Kart Wii", path: "/mkwii" }
     ];
 
     return (

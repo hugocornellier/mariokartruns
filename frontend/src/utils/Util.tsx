@@ -1,13 +1,11 @@
-
-
-
 export module Util {
 
     export function onRacePage() {
         return pageDirIsMK8OrMK8DX() || pageDirIs('mk7');
     }
 
-    export const onTrackList = () => Util.onMK8RaceList() || Util.onMK8DXRaceList() || Util.onMK7RaceList();
+    export const onTrackList = () => Util.onMK8RaceList() || Util.onMK8DXRaceList()
+        || Util.onMK7RaceList() || Util.onMKWiiRaceList();
 
     const getPageData = (dirLevel: number) : string => {
         const split: string[] = String(window.location).split("/")
@@ -41,6 +39,10 @@ export module Util {
 
     export const pageDirIsPlayer = () : boolean => {
         return pageDirIs('player')
+    }
+
+    export function onMKWiiRaceList() {
+        return pathIs("/mkwii")
     }
 
     export const onMK7RaceList = () : boolean => {

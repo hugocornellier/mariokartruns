@@ -50,16 +50,20 @@ span {
   background: #eee;
 }
 
-.race-title .game-id.mk8 {
-  background: #d6eeb9
-}
-
 .race-title .game-id.mk8dx {
   background: #b9eee0
 }
 
+.race-title .game-id.mk8 {
+  background: #d6eeb9
+}
+
 .race-title .game-id.mk7 {
   background: #eeedb9
+}
+
+.race-title .game-id.mkwii {
+  background: #eed7b9
 }
 
 .sidebar div {

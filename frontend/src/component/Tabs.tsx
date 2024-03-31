@@ -23,9 +23,10 @@ interface TabButtonProps {
 }
 
 const TabButton: React.FC<TabButtonProps> = ({ cc, active }) => {
-    const raceUrl: string = Util.onTrackList()
-        ? `/mk8dx${ cc === '200cc' ? '/200cc' : '' }`
-        : `/mk8dx/${ Util.prepareURL(Util.getRaceName()) }${ cc === '200cc' ? '/200cc' : '' }`;
+    let raceUrl: string = '/mk8dx';
+    raceUrl += Util.onTrackList()
+        ? `${ cc === '200cc' ? '/200cc' : '' }`
+        : `/${ Util.prepareURL(Util.getRaceName()) }${ cc === '200cc' ? '/200cc' : '' }`;
 
     return (
         <Link to={raceUrl}>

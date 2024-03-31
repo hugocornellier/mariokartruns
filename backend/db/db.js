@@ -57,6 +57,30 @@ module.exports = {
         });
     },
 
+    // ["Game", "Track", "Record", "Player", "Date"]
+    getColeRecords: async function getColeRecords() {
+        const tables = ['mk7', 'mk8', 'mk8dx'];
+        const sqlQuery = `
+            SELECT * FROM (
+                ${tables.map(table => `
+                    SELECT * FROM ${table} WHERE player='Cole'
+                `).join(' UNION ALL ')}
+            ) AS combined_data
+            ORDER BY date DESC, time
+            LIMIT 50
+        `;
+
+        return new Promise((resolve, reject) => {
+            db_conn.all(sqlQuery, [], (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    },
+
     deleteTable: async function deleteTable(table) {
         if (await this.checkIfTableExists(table)) {
             db_conn.exec(`

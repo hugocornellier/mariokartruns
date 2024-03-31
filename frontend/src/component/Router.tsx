@@ -32,7 +32,7 @@ const Router: React.FC<RouterProps> = ({ socket }) => {
         </ContentLayout>
     );
 
-    const games = ['mk8dx', 'mk8', 'mk7'];
+    const games = ['mk8dx', 'mk8', 'mk7', 'mkwii'];
 
     const routes: RouteConfig[] = [
         { path: "/", element: createRouteElement(<Home socket={socket} />, '') },

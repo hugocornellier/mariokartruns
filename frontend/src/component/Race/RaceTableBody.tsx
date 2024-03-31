@@ -39,13 +39,22 @@ const TrackListRow: React.FC<TableRowProps> = ({ record, game, cc }) => {
     return (
         <tr>
             <td data-label="Race">
-                <Link className="cursor-pointer" to={`/${game}/${record.race.replace(/ /g, "+")}${cc === '200cc' ? '/200cc' : ''}`}>
+                <Link className="cursor-pointer" to={`/${game}/${Util.prepareURL(record.race)}${cc === '200cc' ? '/200cc' : ''}`}>
                     {record.race}
                 </Link>
             </td>
-            <td data-label="Record">{record.time}</td>
+            <td data-label="Time">
+                {record.video_url !== "0"
+                    ? (
+                        <Link target="_blank" className="cursor-pointer" to={record.video_url}>
+                            {record.time}
+                        </Link>
+                    )
+                    : record.time
+                }
+            </td>
             <td data-label="Player">
-                <Link className="cursor-pointer" to={`/${game}/player/${record.player.replace(/ /g, "+")}`}>
+                <Link className="cursor-pointer" to={`/${game}/player/${Util.prepareURL(record.player)}`}>
                     {record.player}
                 </Link>
             </td>
@@ -59,16 +68,29 @@ const AllRow: React.FC<{ record: any; cc: string; }> = ({ record, cc }) => {
     return (
         <tr>
             <td data-label="Date">{record.date}</td>
-            <td data-label="Game">{record.table_name.toUpperCase()}</td>
+            <td data-label="Game">
+                <Link to={"/" + record.table_name}>
+                    {record.table_name.toUpperCase()}
+                </Link>
+            </td>
             <td data-label="Race">
-                <Link to={`/${record.table_name}/${record.race.replace(/ /g, "+")}${record.cc === '200cc' ? '/200cc' : ''}`}>
+                <Link to={`/${record.table_name}/${Util.prepareURL(record.race)}${record.cc === '200cc' ? '/200cc' : ''}`}>
                     {record.race}
                     {(record.table_name == "mk8dx") && (" (" + record.cc + ")") }
                 </Link>
             </td>
-            <td data-label="Record">{record.time}</td>
+            <td data-label="Time">
+                {record.video_url !== "0"
+                    ? (
+                        <Link target="_blank" className="cursor-pointer" to={record.video_url}>
+                            {record.time}
+                        </Link>
+                    )
+                    : record.time
+                }
+            </td>
             <td data-label="Player">
-                <Link to={`/${record.table_name}/player/${record.player.replace(/ /g, "+")}`}>
+                <Link to={`/${record.table_name}/player/${Util.prepareURL(record.player)}`}>
                     {record.player}
                 </Link>
             </td>
@@ -100,8 +122,8 @@ const RacePageRow: React.FC<{ i: number; record: any; game: string; tableLabelCo
                     className="cursor-pointer"
                     to={
                         tableLabelCol2 === "Player"
-                            ? `/${game}/player/${record.player.replace(/ /g, "+")}`
-                            : `/${game}/` + record.race.replace(/ /g, "+")
+                            ? `/${game}/player/${Util.prepareURL(record.player)}`
+                            : `/${game}/` + Util.prepareURL(record.race)
                     }
                 >
                     {tableLabelCol2 === "Player" ? record.player : record.race}
