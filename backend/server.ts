@@ -7,6 +7,7 @@ const scraper = require("./scrape/scrape_tools")
 const httpServer = createServer();
 const io = new Server(httpServer);
 
+app.use(express.static("frontend/build"));
 app.get("*", (req, res) => {
     console.log("Test")
     res.sendFile("index.html", {root: "frontend/build"});
