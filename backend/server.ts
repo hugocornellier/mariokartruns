@@ -8,8 +8,7 @@ const httpServer = createServer();
 const io = new Server(httpServer);
 
 app.use(express.static("frontend/build"));
-app.get("*", (req, res) => {
-    console.log("Test")
+app.get('/', (req: express.Request, res: express.Response) => {
     res.sendFile("index.html", {root: "frontend/build"});
 });
 
