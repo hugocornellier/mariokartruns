@@ -1,12 +1,15 @@
-import express = require('express');
-const app = express();
+import {Express} from "express";
+import express = require("express");
+const app: Express = express();
 import { Server, Socket } from "socket.io";
 import * as http from 'http'
 const server = http.createServer();
 const io = new Server(server);
 const db = require("./db/db");
 import { scrapeAllRacesByGame } from "./scrape/scrape_tools_ts";
+import path = require("path");
 
+app.use(express.static(path.join(__dirname, "../frontend/build")))
 app.get('*', (req: express.Request, res: express.Response) => {
     res.send('Hello, this is a basic Express server written in TypeScript!');
 });
