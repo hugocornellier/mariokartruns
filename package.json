@@ -4,9 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "tsc backend/*.ts && node backend/server.js",
+    "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
-    "server": "tsc backend/*.ts && node backend/server.js",
+    "server": "node backend/server.js",
     "build": "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [
@@ -24,7 +24,7 @@
     "cors": "^2.8.5",
     "cross-fetch": "^4.0.0",
     "dotenv": "^9.0.2",
-    "express": "^4.19.2",
+    "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
     "node-html-parser": "^6.1.12",
     "react-router-dom": "^6.22.3",
@@ -33,11 +33,6 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.12.2",
-    "nodemon": "^3.0.3",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.3"
+    "nodemon": "^3.0.3"
   }
 }
