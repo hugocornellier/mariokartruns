@@ -10,6 +10,8 @@ View live: [https://mariokartruns.com](https://mariokartruns.com)
 - ```npm start```
 - In separate terminal:
   - ```npm start --prefix ./frontend```
+- For testing...
+  - ```npm run server```
 
 ### Production:
 - At root: ```npm run build```
