@@ -1,20 +1,17 @@
-import {Express} from "express";
-import express = require("express");
-const app: Express = express();
-import { Server, Socket } from "socket.io";
-import * as http from 'http'
-const server = http.createServer();
-const io = new Server(server);
-const db = require("./db/db");
-import { scrapeAllRacesByGame } from "./scrape/scrape_tools_ts";
-import path = require("path");
+import express = require('express');
+import { Server, Socket } from 'socket.io';
+import * as http from 'http';
+import db = require('./db/db');
 
-app.use(express.static(path.join(__dirname, "../frontend/build")))
-app.get('*', (req: express.Request, res: express.Response) => {
-    res.send('Hello, this is a basic Express server written in TypeScript!');
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+app.use((req, res) => {
+    res.send('hello world');
 });
 
-io.on("connection", (socket: Socket) => {
+io.on('connection', (socket: Socket) => {
     console.log("Socket.io connection made successfully.");
     socket.on("get_race_data", async (race, game, cc) => {
         io.emit("get_race_data_ret", await db.getAllEntriesByRace(race, game, cc));
@@ -28,18 +25,16 @@ io.on("connection", (socket: Socket) => {
     socket.on("get_latest_records", async (table, cc) => {
         io.emit("get_latest_records_ret", await db.getLatestRecords());
     })
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
 });
 
 let home_path = app.settings['views'].substring(0, 5)
-const port = home_path === "/User" || home_path === "C:\\Us"
+const port: number = home_path === "/User" || home_path === "C:\\Us"
     ? 4000
     : 5000
-server.listen(port, async () => {
-    console.log(`Server running on port ${port}!`)
-    // try {
-    //     await scrapeAllRacesByGame('mkwii', false, 1);
-    // } catch (error) {
-    //     console.error('An error occurred while scraping races:', error);
-    // }
 
+server.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
