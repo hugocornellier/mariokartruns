@@ -4,7 +4,13 @@ const scraper = require("./scrape/scrape_tools");
 const app = express();
 
 app.get('*', (req: express.Request, res: express.Response) => {
-    res.sendFile("index.html", {root: "frontend/build"});
+    res.sendFile("index.html", { root: "frontend/build" }, (err) => {
+        if (err) {
+            console.error("Error sending file:", err);
+        } else {
+            console.log("File sent successfully");
+        }
+    });
 });
 
 let home_path = app.settings['views'].substring(0, 5)
