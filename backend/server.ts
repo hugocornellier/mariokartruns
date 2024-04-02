@@ -4,7 +4,7 @@ const scraper = require("./scrape/scrape_tools");
 const app = express();
 
 app.get('*', (req: express.Request, res: express.Response) => {
-    res.send('Hello, this is a basic Express server written in TypeScript!');
+    res.sendFile("index.html", {root: "frontend/build"});
 });
 
 let home_path = app.settings['views'].substring(0, 5)
