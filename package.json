@@ -4,9 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "tsc backend/*.ts; node backend/server.js",
+    "start": "tsc backend/*.ts && node backend/server.js",
     "dev": "nodemon backend/server.js",
-    "server": "tsc backend/*.ts; node backend/server.js",
+    "server": "tsc backend/*.ts && node backend/server.js",
     "build": "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [
