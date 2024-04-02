@@ -2,11 +2,13 @@ const http = require("http")
 const express = require("express")
 const socketIO = require("socket.io")
 const app = express()
+const path = require('path')
 const server = http.createServer(app)
 const io = socketIO(server)
 const db = require("./db/db")
 const scraper = require("./scrape/scrape_tools")
 
+app.use(express.static(path.join(__dirname, "../frontend/build")))
 app.get("*", (req, res) => {
     res.sendFile("index.html", {root: "frontend/build"});
 });
@@ -31,11 +33,25 @@ let home_path = app.settings['views'].substring(0, 5)
 const port = home_path === "/User" || home_path === "C:\\Us"
     ? 4000
     : 5000
-app.listen(port, async () => {
-    console.log(`Server running => port ${port}!`)
-    // await scraper.scrapeAllRacesByGame(
-    //     'mk8dx',
-    //     false,
-    //     1
-    // )
-});
+server.listen(
+    port,
+    async () => {
+        return new Promise(async (resolve) => {
+            console.log(`Server running!`)
+            // await db.deleteAllByRaceId(41, 'mk8')
+            // await scraper.getAndInsertRecords(
+            //    "https://mkwrs.com/mk8dx/display.php?track=Wii+Coconut+Mall&cup=dash",
+            //    'mk8dx',
+            //    52
+            // )
+            // await scraper.scrapeAllRacesByGame(
+            //     'mkwii',
+            //     true,
+            //     1
+            // )
+            //console.log(await scraper.getRaceURLs('mk8dx'))
+            //await scraper.scrapeHomePage()
+            resolve()
+        })
+    }
+)

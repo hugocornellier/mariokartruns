@@ -13,4 +13,4 @@ View live: [https://mariokartruns.com](https://mariokartruns.com)
 
 ### Production:
 - At root: ```npm run build```
-- ```pm2 stop all && pm2 start ./backend/serverT.js```
+- ```pm2 stop all && pm2 start ./backend/server.js```
