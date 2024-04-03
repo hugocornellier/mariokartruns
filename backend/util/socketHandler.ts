@@ -3,6 +3,30 @@ import db from '../db/db';
 
 export default {
 
+    handleConnection(socket: Socket) {
+        console.log("Socket.io connection made successfully.");
+
+        socket.on("get_race_data", async (race: string, game: string, cc: string) => {
+            await this.handleGetRaceData(socket, race, game, cc);
+        });
+
+        socket.on("get_player_data", async (player: string, game: string) => {
+            await this.handleGetPlayerData(socket, player, game);
+        });
+
+        socket.on("get_records", async (table: string, cc: string) => {
+            await this.handleGetRecords(socket, table, cc);
+        });
+
+        socket.on("get_latest_records", async () => {
+            await this.handleGetLatestRecords(socket);
+        });
+
+        socket.on('disconnect', () => {
+            console.log('User disconnected');
+        });
+    },
+
     async handleGetRaceData(socket: Socket, race: string, game: string, cc: string){
         try {
             const raceData = await db.getAllEntriesByRace(race, game, cc);

@@ -10,7 +10,7 @@ const express = require("express");
 const app = express();
 const server = createServer(app);
 const io: Server = new Server(server);
-const buildPath = path.join(__dirname, "../frontend/build");
+const buildPath: string = path.join(__dirname, "../frontend/build");
 
 app.use(express.static(buildPath));
 app.get("*", (_req: Request, res: Response) => {
@@ -19,30 +19,8 @@ app.get("*", (_req: Request, res: Response) => {
     });
 });
 
-io.on('connection', (socket: Socket) => {
-    console.log("Socket.io connection made successfully.");
-
-    socket.on("get_race_data", async (race: string, game: string, cc: string) => {
-        await socketHandler.handleGetRaceData(socket, race, game, cc);
-    });
-
-    socket.on("get_player_data", async (player: string, game: string) => {
-        await socketHandler.handleGetPlayerData(socket, player, game);
-    });
-
-    socket.on("get_records", async (table: string, cc: string) => {
-        await socketHandler.handleGetRecords(socket, table, cc);
-    });
-
-    socket.on("get_latest_records", async () => {
-        await socketHandler.handleGetLatestRecords(socket);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
-    });
-});
+io.on('connection', socketHandler.handleConnection);
 
 server.listen(port, async () => {
-    console.log(`Server is running on port ${port}! :D `);
+    console.log(`Server is running on port ${port}! :)) `);
 });
