@@ -10,8 +10,13 @@ const app = require('express')();
 const server = createServer(app);
 const io: Server = new Server(server);
 
+// Middleware to serve index.html
 app.use((_req: Request, res: Response) => {
-    res.sendFile("index.html", { root: "../frontend/build" });
+    res.sendFile("index.html", { root: "../frontend/build" }, (err) => {
+        if (err) {
+            console.log(err);
+        }
+    });
 });
 
 // Socket.io connection handler
