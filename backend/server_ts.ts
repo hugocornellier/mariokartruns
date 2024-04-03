@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
 import db from './db/db_ts';
-import serverUtil from './utils/serverUtil';
 
 const app = require('express')();
 const server = createServer(app);
@@ -40,6 +39,6 @@ const port: number = homePath === "/User" || homePath === "C:\\Us" ? 4000 : 5000
 
 server.listen(port, async () => {
     console.log(`Server is running on port ${port}! [On a TS Express server :)]`);
-    serverUtil.print("Test")
+    //serverUtil.print("Test")
     //console.log(await db.getLatestRecords())
 });
