@@ -12,11 +12,7 @@ const io: Server = new Server(server);
 
 // Middleware to serve index.html
 app.use((_req: Request, res: Response) => {
-    res.sendFile("index.html", { root: "/root/mariokartrecords/frontend/build" }, (err) => {
-        if (err) {
-            console.log(err);
-        }
-    });
+    res.send("test");
 });
 
 // Socket.io connection handler
