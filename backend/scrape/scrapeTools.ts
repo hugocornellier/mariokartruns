@@ -1,6 +1,6 @@
 import fetch from "cross-fetch";
 import { parse as parseHtml, HTMLElement } from "node-html-parser";
-import * as db from "../db/db";
+import db from "../db/db";
 
 const removeYouTubeLinksFromArray = (a: string[]): string[] =>
     a.filter(i => !i.includes("youtube.com/") && !i.includes("youtu.be/"));
@@ -151,7 +151,7 @@ export async function getAndInsertRecords(race_url: string, table: string, race_
         }
         for (const row of rows) {
             try {
-                await db.insertEntry(row, table);
+                await db.insertEntry({...row}, table);
             } catch (e: any) {
                 console.log("Error: " + e.message);
             }

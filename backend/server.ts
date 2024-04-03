@@ -44,5 +44,5 @@ io.on('connection', (socket: Socket) => {
 });
 
 server.listen(port, async () => {
-    console.log(`Server is running on port ${port}! `);
+    console.log(`Server is running on port ${port}! :D `);
 });
