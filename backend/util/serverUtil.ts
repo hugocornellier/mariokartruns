@@ -11,7 +11,6 @@ const getDotEnvPropAsNumber = (property: string): number => {
 };
 
 export default {
-
     getPort(): number {
         const port: number = getPortByEnvironment(process.env['NODE_ENV']);
         if (isNaN(port)) {  // NaN returned indicates .env config error. Shut down...
