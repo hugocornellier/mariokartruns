@@ -39,5 +39,5 @@ const port: number = homePath === "/User" || homePath === "C:\\Us" ? 4000 : 5000
 
 server.listen(port, async () => {
     console.log(`Server is running on port ${port}! [On a TS Express server :)]`);
-    console.log(await db.getLatestRecords())
+    //console.log(await db.getLatestRecords())
 });
