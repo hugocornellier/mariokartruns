@@ -19,6 +19,11 @@ export default {
             process.exit(1);
         }
         return port;
-    }
+    },
 
+    startServer(server: any, port: number) {
+        server.listen(port, async () => {
+            console.log(`Server is running on port ${port}! :'D `);
+        });
+    }
 };
