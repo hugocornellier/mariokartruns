@@ -10,14 +10,8 @@ const app = require('express')();
 const server = createServer(app);
 const io: Server = new Server(server);
 
-const frontendBuildPath = require('path').join(__dirname, '..', 'frontend', 'build');
-app.get('/', (_req: Request, res: Response) => {
-    res.sendFile('index.html', { root: frontendBuildPath }, (err) => {
-        if (err) {
-            console.log(err);
-            res.status(500).send('Error serving index.html');
-        }
-    });
+app.use((_req: Request, res: Response) => {
+    res.sendFile("index.html", { root: "../frontend/build" });
 });
 
 // Socket.io connection handler
