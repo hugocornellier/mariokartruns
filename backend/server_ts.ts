@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
 import db from './db/db_ts';
-import path from "path";
+import * as path from "path";
 
 const app = require('express')();
 const server = createServer(app);
