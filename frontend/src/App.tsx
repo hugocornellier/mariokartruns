@@ -7,7 +7,7 @@ function App() {
     const [socket, setSocket] = useState<Socket | undefined>();
 
     useEffect(() => {
-        const initializedSocket = SocketHelper.init();
+        const initializedSocket: Socket = SocketHelper.init();
         setSocket(initializedSocket);
 
         return () => {

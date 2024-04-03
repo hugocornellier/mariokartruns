@@ -1,4 +1,4 @@
-import db_conn from "./dbConn";
+import dbConn from "./helpers/dbConn";
 
 interface Row {
     [key: string]: string | number | null;
@@ -14,7 +14,7 @@ interface Record {
 
 export default {
     createTable(tableName: string): void {
-        db_conn.exec(`
+        dbConn.exec(`
             CREATE TABLE ${tableName} (
                 date VARCHAR(50) NOT NULL,
                 player VARCHAR(50) NOT NULL,
@@ -57,7 +57,7 @@ export default {
         `;
 
         return new Promise<Record[]>((resolve, reject) => {
-            db_conn.all(sqlQuery, [], (err: any, rows: Record[] | PromiseLike<Record[]>) => {
+            dbConn.all(sqlQuery, [], (err: any, rows: Record[] | PromiseLike<Record[]>) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -80,7 +80,7 @@ export default {
         `;
 
         return new Promise<Record[]>((resolve, reject) => {
-            db_conn.all(sqlQuery, [], (err: any, rows: Record[] | PromiseLike<Record[]>) => {
+            dbConn.all(sqlQuery, [], (err: any, rows: Record[] | PromiseLike<Record[]>) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -92,7 +92,7 @@ export default {
 
     async deleteTable(table: string): Promise<void> {
         if (await this.checkIfTableExists(table)) {
-            db_conn.exec(`DROP TABLE ${table}`);
+            dbConn.exec(`DROP TABLE ${table}`);
         }
     },
 
@@ -110,7 +110,7 @@ export default {
                     VALUES (${Array(allColumns.length).fill('?').join(', ')})
                 `;
                 const insertValues = allColumns.map(col => row[col]);
-                db_conn.run(insertQuery, insertValues, (err) => {
+                dbConn.run(insertQuery, insertValues, (err) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -127,7 +127,7 @@ export default {
 
     async getEntry(row: Row, table: string): Promise<Row[]> {
         return new Promise<Row[]>((resolve, reject) => {
-            db_conn.all(
+            dbConn.all(
                 `SELECT * 
                     FROM ${table} 
                     WHERE date = ? 
@@ -162,7 +162,7 @@ export default {
 
     async checkIfTableExists(tableName: string): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-            db_conn.all(
+            dbConn.all(
                 `SELECT name FROM sqlite_master WHERE type='table' AND name='${tableName}';`,
                 (err: any, rows: string | any[]) => {
                     if (err) {
@@ -176,7 +176,7 @@ export default {
 
     async getRaceIdByRaceName(game: string, raceName: string): Promise<number> {
         return new Promise<number>((resolve, reject) => {
-            db_conn.all(
+            dbConn.all(
                 `SELECT * 
                 FROM ${game} 
                 WHERE race = ? 
@@ -199,7 +199,7 @@ export default {
 
     async getAllEntriesByGame(game: string): Promise<Record[]> {
         return new Promise<Record[]>((resolve, reject) => {
-            db_conn.all(
+            dbConn.all(
                 `SELECT * 
                 FROM ${game} 
                 ORDER BY date ASC`,
@@ -216,7 +216,7 @@ export default {
 
     async getAllEntriesByRace(race: string, table: string, cc: string): Promise<Record[]> {
         return new Promise<Record[]>((resolve, reject) => {
-            db_conn.all(
+            dbConn.all(
                 `SELECT * 
                 FROM ${table} 
                 WHERE race = ?
@@ -235,7 +235,7 @@ export default {
 
     async getAllEntriesByPlayer(player: string, table: string): Promise<Record[]> {
         return new Promise<Record[]>((resolve, reject) => {
-            db_conn.all(
+            dbConn.all(
                 `SELECT * 
                 FROM ${table} 
                 WHERE player = ?
@@ -253,7 +253,7 @@ export default {
 
     async getRecords(table: string, cc: string): Promise<Record[]> {
         return new Promise<Record[]>((resolve, reject) => {
-            db_conn.all(
+            dbConn.all(
                 `SELECT * 
                 FROM ${table} 
                 WHERE cc = '${cc}'
