@@ -1,4 +1,4 @@
-import db_conn from "./db_conn";
+import db_conn from "./db_conn_ts";
 
 interface Row {
     [key: string]: string | number | null;
