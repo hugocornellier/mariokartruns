@@ -12,7 +12,9 @@ const buildPath = path.join(__dirname, "../frontend/build");
 
 app.use(express.static(buildPath));
 app.get("*", (_req: Request, res: Response) => {
-    res.sendFile("index.html", { root: buildPath });
+    res.sendFile("index.html", {
+        root: buildPath
+    });
 });
 
 io.on('connection', (socket: Socket) => {
