@@ -13,6 +13,7 @@ interface Record {
 }
 
 export default {
+
     createTable(tableName: string): void {
         db_conn.exec(`
             CREATE TABLE ${tableName} (
@@ -50,29 +51,6 @@ export default {
             SELECT * FROM (
                 ${tables.map(table => `
                     SELECT '${table}' AS table_name, race, time, player, cc, date FROM ${table}
-                `).join(' UNION ALL ')}
-            ) AS combined_data
-            ORDER BY date DESC, time
-            LIMIT 50
-        `;
-
-        return new Promise<Record[]>((resolve, reject) => {
-            db_conn.all(sqlQuery, [], (err: any, rows: Record[] | PromiseLike<Record[]>) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-        });
-    },
-
-    async getColeRecords(): Promise<Record[]> {
-        const tables: string[] = ['mk7', 'mk8', 'mk8dx'];
-        const sqlQuery: string = `
-            SELECT * FROM (
-                ${tables.map(table => `
-                    SELECT * FROM ${table} WHERE player='Cole'
                 `).join(' UNION ALL ')}
             ) AS combined_data
             ORDER BY date DESC, time
@@ -192,23 +170,6 @@ export default {
                     } else {
                         reject("An error happened fetching raceID.")
                     }
-                }
-            )
-        })
-    },
-
-    async getAllEntriesByGame(game: string): Promise<Record[]> {
-        return new Promise<Record[]>((resolve, reject) => {
-            db_conn.all(
-                `SELECT * 
-                FROM ${game} 
-                ORDER BY date ASC`,
-                [],
-                (err: any, rows: Record[] | PromiseLike<Record[]>) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    resolve(rows);
                 }
             )
         })
