@@ -14,7 +14,11 @@ const io: Server = new Server(server);
 const frontendBuildPath = require('path').join(__dirname, '..', 'frontend', 'build');
 app.use((_req: Request, res: Response) => {
     console.log(frontendBuildPath);
-    res.sendFile('index.html', { root: frontendBuildPath });
+    res.sendFile("index.html", { root: frontendBuildPath }, (err) => {
+        if (err) {
+            console.log(err)
+        }
+    });
 });
 
 // Socket.io connection handler
