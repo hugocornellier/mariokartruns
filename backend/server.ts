@@ -1,11 +1,8 @@
 import { Request, Response } from 'express';
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
-import scraper from './data/scrape/scrape_tools';
-import socketHandler from './data/utils/socketHandler';
-import serverUtils from './data/utils/serverUtils';
+import db from './db/db';
 
-const port: number = serverUtils.getPort();
 const app = require('express')();
 const server = createServer(app);
 const io: Server = new Server(server);
@@ -14,38 +11,33 @@ app.use((_req: Request, res: Response) => {
     res.sendFile("index.html", { root: "../frontend/build" });
 });
 
-// Socket.io connection handler
-const handleSocketConnection = (socket: Socket) => {
+io.on('connection', (socket: Socket) => {
     console.log("Socket.io connection made successfully.");
-
     socket.on("get_race_data", async (race: string, game: string, cc: string) => {
-        await socketHandler.handleGetRaceData(socket, race, game, cc);
+        io.emit("get_race_data_ret", await db.getAllEntriesByRace(race, game, cc));
     });
-
     socket.on("get_player_data", async (player: string, game: string) => {
-        await socketHandler.handleGetPlayerData(socket, player, game);
+        const [playerData, records] = await Promise.all([
+            db.getAllEntriesByPlayer(decodeURI(player), game),
+            db.getRecords(game, 'all')
+        ]);
+        io.emit("get_player_data_ret", playerData, records);
     });
-
     socket.on("get_records", async (table: string, cc: string) => {
-        await socketHandler.handleGetRecords(socket, table, cc);
+        io.emit("get_records_ret", await db.getRecords(table, cc));
     });
-
     socket.on("get_latest_records", async () => {
-        await socketHandler.handleGetLatestRecords(socket);
+        io.emit("get_latest_records_ret", await db.getLatestRecords());
     });
-
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });
-};
+});
 
-io.on('connection', handleSocketConnection);
+const homePath: string = app.settings['views'].substring(0, 5);
+const port: number = homePath === "/User" || homePath === "C:\\Us" ? 4000 : 5000;
 
 server.listen(port, async () => {
     console.log(`Server is running on port ${port}`);
-    // await scraper.scrapeAllRacesByGame(
-    //     'mk8',
-    //     false,
-    //     1
-    // )
+    console.log(await db.getLatestRecords())
 });
