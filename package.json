@@ -21,7 +21,6 @@
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@types/socket.io": "^3.0.2",
-    "@types/sqlite3": "^3.1.11",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "cross-fetch": "^4.0.0",
