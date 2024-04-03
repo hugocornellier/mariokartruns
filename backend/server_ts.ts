@@ -8,7 +8,7 @@ const server = createServer(app);
 const io: Server = new Server(server);
 
 app.use((_req: Request, res: Response) => {
-    res.sendFile("index.html", { root: "frontend/build" });
+    res.sendFile("index.html", { root: "../frontend/build" });
 });
 
 io.on('connection', (socket: Socket) => {
@@ -39,6 +39,5 @@ const port: number = homePath === "/User" || homePath === "C:\\Us" ? 4000 : 5000
 
 server.listen(port, async () => {
     console.log(`Server is running on port ${port}! [On a TS Express server :)]`);
-    //serverUtil.print("Test")
     //console.log(await db.getLatestRecords())
 });
