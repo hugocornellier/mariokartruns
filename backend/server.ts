@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
 import serverUtil from './util/serverUtil';
-import socketHandler from './util/socketHandler';
+import handleConnection from './util/socketHandler';
 import * as path from "path";
 
 const port: number = serverUtil.getPort();
@@ -19,7 +19,7 @@ app.get("*", (_req: Request, res: Response) => {
     });
 });
 
-io.on('connection', socketHandler.handleConnection);
+io.on('connection', handleConnection);
 
 server.listen(port, async () => {
     console.log(`Server is running on port ${port}! :)) `);
