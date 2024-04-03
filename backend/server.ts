@@ -3,11 +3,12 @@ import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
 import scraper from './data/scrape/scrape_tools';
 import socketHandler from './data/utils/socketHandler';
+import serverUtils from './data/utils/serverUtils';
 
+const port: number = serverUtils.getPort();
 const app = require('express')();
 const server = createServer(app);
 const io: Server = new Server(server);
-const port: number = process.env.NODE_ENV === 'development' ? 5000 : 4000;
 
 app.use((_req: Request, res: Response) => {
     res.sendFile("index.html", { root: "../frontend/build" });
