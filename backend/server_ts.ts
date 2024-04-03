@@ -2,13 +2,17 @@ import { Request, Response } from 'express';
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
 import db from './db/db_ts';
+import path from "path";
 
 const app = require('express')();
 const server = createServer(app);
 const io: Server = new Server(server);
 
-app.use((_req: Request, res: Response) => {
-    res.sendFile("index.html", { root: "../frontend/build" });
+const buildPath = path.join(__dirname, "../frontend/build");
+console.log(buildPath)
+app.use(require('express').static(buildPath));
+app.get("*", (_req: Request, res: Response) => {
+    res.sendFile("index.html", { root: "frontend/build" });
 });
 
 io.on('connection', (socket: Socket) => {
