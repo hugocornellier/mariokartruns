@@ -4,6 +4,7 @@ import { createServer } from 'http';
 import scraper from './data/scrape/scrape_tools';
 import socketHandler from './data/utils/socketHandler';
 import serverUtils from './data/utils/serverUtils';
+import path from "path";
 
 const port: number = serverUtils.getPort();
 const app = require('express')();
@@ -11,8 +12,10 @@ const server = createServer(app);
 const io: Server = new Server(server);
 
 // Middleware to serve index.html
+const frontendBuildPath = path.join(__dirname, '..', 'frontend', 'build');
 app.use((_req: Request, res: Response) => {
-    res.send("test");
+    console.log(frontendBuildPath);
+    res.sendFile('index.html', { root: frontendBuildPath });
 });
 
 // Socket.io connection handler
