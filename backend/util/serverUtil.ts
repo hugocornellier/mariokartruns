@@ -11,9 +11,6 @@ const getDotEnvPropAsNumber = (property: string): number => {
 };
 
 export default {
-    test(): void {
-        console.log("hi")
-    },
 
     getPort(): number {
         const port: number = getPortByEnvironment(process.env['NODE_ENV']);
@@ -23,4 +20,5 @@ export default {
         }
         return port;
     }
+
 };
