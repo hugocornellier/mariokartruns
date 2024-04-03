@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
-import serverUtil from './helpers/serverUtil';
-import socketHandler from './helpers/socketHandler';
+import serverUtil from './util/serverUtil';
+import socketHandler from './util/socketHandler';
 import * as path from "path";
 
 const express = require("express");
@@ -46,6 +46,7 @@ const homePath: string = app.settings['views'].substring(0, 5);
 const port: number = homePath === "/User" || homePath === "C:\\Us" ? 4000 : 5000;
 
 server.listen(port, async () => {
-    console.log(`Server is running on port ${port}! [On a TS Express server :D]`);
+    console.log(`Server is running on port ${port}! [On a TS Express server :O]`);
     serverUtil.test();
+    console.log(serverUtil.getPort());
 });
