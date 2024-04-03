@@ -8,7 +8,7 @@ const server = createServer(app);
 const io: Server = new Server(server);
 
 app.use((_req: Request, res: Response) => {
-    res.send("UGH!")
+    res.sendFile("index.html", { root: "../frontend/build" });
 });
 
 io.on('connection', (socket: Socket) => {
