@@ -182,7 +182,7 @@ export default {
                 WHERE race = ? 
                 ORDER BY date ASC 
                 LIMIT 1`,
-                [raceName],
+                [decodeURI(raceName)],
                 (err: any, rows: { race_id: number | PromiseLike<number>; }[]) => {
                     if (err) {
                         reject(err);

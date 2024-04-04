@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import {scrapeAllRacesByGame} from "./scrapeTools";
 dotenv.config();
 
 const getPortByEnvironment = (env: string | undefined): number => env === 'production'
@@ -23,5 +24,12 @@ export default function startServer(server: any) {
     const port: number = getPort();
     server.listen(port, async () => {
         console.log(`Server is running on port ${port}! :'D `);
+
+        // Scraping
+        await scrapeAllRacesByGame(
+            'mk8',
+            false,
+            1
+        );
     });
 };

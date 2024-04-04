@@ -11,22 +11,22 @@ const removeDuplicatesFromArray = <T>(arr: T[]): T[] =>
 const isNumber = (value: any): boolean => typeof value === 'number' && isFinite(value);
 
 async function fetchHTML(url: string): Promise<string> {
-    try {
-        const res = await fetch(url);
-        if (res.status >= 400)
-            throw new Error("Bad response from server");
-        const html = await res.text();
-        if (html)
-            return html;
-        throw new Error("Error getting HTML.");
-    } catch (error: any) {
-        throw new Error(error.message);
+    const res: Response = await fetch(url);
+    if (res.status >= 400) {
+        throw new Error("Bad response from server");
     }
+
+    const html: string = await res.text();
+    if (!html) {
+        throw new Error("Error getting HTML.");
+    }
+
+    return html;
 }
 
 interface RaceRecord {
     race: string;
-    race_id: number;
+    raceID: number;
     cup: string | null;
     cc: string;
     date: string;
@@ -47,21 +47,17 @@ interface RaceRecord {
     nation: string | number;
 }
 
-const getRaceRecords = async (race_url: string, game: string, race_id: number): Promise<RaceRecord[]> => {
+const getRaceRecords = async (raceURL: string, game: string, raceID: number): Promise<RaceRecord[]> => {
     const getCellContent = (cell_count: number, matchingCell: number, cell: HTMLElement, rowVal: string): string => {
         return (cell_count === matchingCell) ? cell.textContent.trim() : rowVal;
     };
 
     try {
-        const html = await fetchHTML(race_url);
-        if (!html) {
-            throw new Error("Error getting HTML.");
-        }
-
+        const html: string = await fetchHTML(raceURL);
         const htmlEl = parseHtml(html);
         const race = htmlEl.querySelectorAll('h2')[0].textContent;
-        const cup = race_url.includes("&cup=") ? race_url.split("&cup=")[1] : null;
-        const cc = race_url.includes("&m=200") ? "200cc" : "150cc";
+        const cup = raceURL.includes("&cup=") ? raceURL.split("&cup=")[1] : null;
+        const cc = raceURL.includes("&m=200") ? "200cc" : "150cc";
         const table = htmlEl.querySelectorAll('table')[2];
         const tableRows = table.querySelectorAll('tr');
         const characterCell: number = game !== 'mkwii' ? 10 : 8;
@@ -70,7 +66,7 @@ const getRaceRecords = async (race_url: string, game: string, race_id: number): 
         const nationCell: number = game !== 'mkwii' ? 3 : 4;
 
         const rows = tableRows.slice(1).map(tableRow => {
-            let row: Partial<RaceRecord> = { race, race_id, cup, cc };
+            let row: Partial<RaceRecord> = { race, raceID, cup, cc };
             let cellCount = 0;
             for (const cell of tableRow.querySelectorAll('td')) {
                 row['date'] = getCellContent(cellCount, 0, cell, row.date || '');
@@ -125,37 +121,30 @@ const getRaceRecords = async (race_url: string, game: string, race_id: number): 
     }
 };
 
-export async function getAndInsertRecords(race_url: string, table: string, race_id: number): Promise<void> {
+export async function getAndInsertRecords(raceURL: string, table: string, raceID: number): Promise<void> {
     try {
-        console.log("Fetching records at URL: " + race_url);
-        if (race_id === null) {
-            let raceName = race_url.split("?track=")[1].split("+").join(' ')
-            if (raceName.endsWith('&m=200')) {
-                raceName = raceName.slice(0, -6)
-            }
-            raceName = decodeURI(raceName.trim())
-            const raceID = await db.getRaceIdByRaceName(table, raceName)
-            if (isNumber(raceID)) {
-                race_id = raceID;
-                console.log(`Found race ID: ${race_id}`)
-            } else {
+        console.log("Fetching records at URL: " + raceURL);
+
+        // If raceID is null, determine it from the race name + getRaceIdByRaceName.
+        if (raceID === null) {
+            let raceName: string = raceURL.split("?track=")[1].split("+").join(' ').trim()
+            raceName = (raceName.endsWith('&m=200')) ? raceName.slice(0, -6) : raceName
+            raceID = await db.getRaceIdByRaceName(table, raceName)
+            if (!isNumber(raceID)) {
                 return;
             }
         }
-        const rows = await getRaceRecords(race_url, table, race_id);
-        console.log("Race records received! Attempting to insert all rows.");
-        console.log(rows);
-        const tableExists = await db.checkIfTableExists(table);
+
+        const tableExists: boolean = await db.checkIfTableExists(table);
         if (!tableExists) {
             await db.createTable(table);
         }
+
+        const rows: RaceRecord[] = await getRaceRecords(raceURL, table, raceID);
         for (const row of rows) {
-            try {
-                await db.insertEntry({...row}, table);
-            } catch (e: any) {
-                console.log("Error: " + e.message);
-            }
+            await db.insertEntry({...row}, table);
         }
+
         console.log("Done inserting...");
     } catch (error: any) {
         throw new Error(error.message);
@@ -163,22 +152,27 @@ export async function getAndInsertRecords(race_url: string, table: string, race_
 }
 
 export async function scrapeAllRacesByGame(game: string, deleteTable: boolean, startingRaceID: number): Promise<void> {
+    console.log("Scraping " + game)
+
     if (deleteTable) {
         await db.deleteTable(game)
     }
-    let race_id = game === 'mk8dx' ? 1.01 : 1
-    for (const url of await getRaceURLs(game)) {
-        if (race_id >= startingRaceID) {
-            await getAndInsertRecords(url, game, Math.floor(race_id))
+
+    let raceID: number = game === 'mk8dx' ? 1.01 : 1
+    const raceUrls: string[] = await getRaceURLs(game);
+    console.log(raceUrls)
+    for (const url of raceUrls) {
+        if (raceID >= startingRaceID) {
+            await getAndInsertRecords(url, game, Math.floor(raceID))
         }
-        race_id = race_id + (game === 'mk8dx' ? 0.5 : 1)
+        raceID = raceID + (game === 'mk8dx' ? 0.5 : 1)
     }
 }
 async function getMKWiiUrls(): Promise<string[]> {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
         const html = parseHtml(await fetchHTML('https://mkwrs.com/mkwii/'))
         const wrTables = html.querySelectorAll('.wr');
-        let race_urls = []
+        let raceURLs = []
         for (const wrTable of wrTables) {
             const tableRows = wrTable.querySelectorAll('tr').slice(1) // Remove header row
             for (const tableRow of tableRows) {
@@ -188,24 +182,23 @@ async function getMKWiiUrls(): Promise<string[]> {
                     const link: HTMLElement | null = linkCell.querySelector('a');
                     if (link && '_rawAttrs' in link && 'href' in link.attrs) {
                         let href = "https://mkwrs.com/mkwii/" + link.attrs.href
-                        race_urls.push(href)
+                        raceURLs.push(href)
                     }
                 }
             }
         }
-        resolve(race_urls)
+        resolve(raceURLs)
     })
 }
 
 export async function getRaceURLs(game: string): Promise<string[]> {
     return new Promise(async (resolve, reject) => {
         if (game === "mkwii") {
-            console.log()
-            resolve(await getMKWiiUrls())
+            resolve(await getMKWiiUrls());
         }
-        let race_urls = []
-        let base_url = `https://mkwrs.com/${game}/`
-        const html = await fetchHTML(base_url)
+        let raceURLs: string[] = [];
+        const base_url: string = `https://mkwrs.com/${game}/`;
+        const html: string = await fetchHTML(base_url);
         if (!html)
             reject("Error getting HTML.")
         const tables = parseHtml(html).querySelectorAll('table')
@@ -226,14 +219,14 @@ export async function getRaceURLs(game: string): Promise<string[]> {
                         }
                         console.log(cup)
                         const raceURL = base_url + a_el.rawAttrs.split('"')[1].trim() + "&cup=" + cup
-                        race_urls.push(raceURL)
+                        raceURLs.push(raceURL)
                     }
                 }
             }
         }
-        if (!Array.isArray(race_urls)) {
+        if (!Array.isArray(raceURLs)) {
             reject("Not array")
         }
-        resolve(removeYouTubeLinksFromArray(removeDuplicatesFromArray(race_urls)))
+        resolve(removeYouTubeLinksFromArray(removeDuplicatesFromArray(raceURLs)))
     })
 }
