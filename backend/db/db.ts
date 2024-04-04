@@ -1,4 +1,5 @@
 import dbConn from "./helpers/dbConn";
+import { games } from "../../frontend/src/utils/constants";
 
 interface Row {
     [key: string]: string | number | null;
@@ -13,6 +14,22 @@ interface Record {
 }
 
 export default {
+    async SQLiteTests(): Promise<boolean> {
+        try {
+            // Check existence of each necessary table, create if not found
+            for (const game of games) {
+                const tableExists: boolean = await this.checkIfTableExists(game);
+                if (!tableExists) {
+                    await this.createTable(game);
+                }
+            }
+            return true;
+        } catch (error: any) {
+            console.error("Error:", error);
+            throw new Error(error.message);
+        }
+    },
+
     createTable(tableName: string): void {
         dbConn.exec(`
             CREATE TABLE ${tableName} (
@@ -33,11 +50,11 @@ export default {
                 tires VARCHAR(250) NOT NULL,
                 glider VARCHAR(250) NOT NULL,
                 time VARCHAR(250) NOT NULL,
-                video_url VARCHAR(250) NOT NULL,
+                videoURL VARCHAR(250) NOT NULL,
                 controller VARCHAR(250) NOT NULL,
                 nation VARCHAR(250) NOT NULL,
                 race VARCHAR(250) NOT NULL, 
-                race_id INTEGER NOT NULL,
+                raceID INTEGER NOT NULL,
                 cup VARCHAR(50),
                 cc VARCHAR(50)
             )
@@ -45,34 +62,11 @@ export default {
     },
 
     async getLatestRecords(): Promise<Record[]> {
-        const tables: string[] = ['mk7', 'mk8', 'mk8dx'];
+        const tables: string[] = games;
         const sqlQuery: string = `
             SELECT * FROM (
                 ${tables.map(table => `
                     SELECT '${table}' AS table_name, race, time, player, cc, date FROM ${table}
-                `).join(' UNION ALL ')}
-            ) AS combined_data
-            ORDER BY date DESC, time
-            LIMIT 50
-        `;
-
-        return new Promise<Record[]>((resolve, reject) => {
-            dbConn.all(sqlQuery, [], (err: any, rows: Record[] | PromiseLike<Record[]>) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-        });
-    },
-
-    async getColeRecords(): Promise<Record[]> {
-        const tables: string[] = ['mk7', 'mk8', 'mk8dx'];
-        const sqlQuery: string = `
-            SELECT * FROM (
-                ${tables.map(table => `
-                    SELECT * FROM ${table} WHERE player='Cole'
                 `).join(' UNION ALL ')}
             ) AS combined_data
             ORDER BY date DESC, time
@@ -102,7 +96,7 @@ export default {
             const existingEntry = await this.getEntry(row, table);
             if (existingEntry.length === 0) {
                 const columns = ['date', 'player', 'days', 'lap1', 'lap2', 'lap3', 'coins', 'shrooms', 'character',
-                    'kart', 'tires', 'glider', 'time', 'video_url', 'controller', 'nation', 'race', 'race_id', 'cc', 'cup'];
+                    'kart', 'tires', 'glider', 'time', 'videoURL', 'controller', 'nation', 'race', 'raceID', 'cc', 'cup'];
                 const babyParkColumns = (row.race !== "GCN Baby Park") ? ['lap4', 'lap5', 'lap6', 'lap7'] : [];
                 const allColumns = [...columns, ...babyParkColumns];
                 const insertQuery = `
@@ -142,14 +136,14 @@ export default {
                     AND tires = ? 
                     AND glider = ? 
                     AND time = ? 
-                    AND video_url = ? 
+                    AND videoURL = ? 
                     AND controller = ? 
                     AND nation = ? 
                     AND race = ? 
                     AND cc = ?`,
                 [row['date'], row['player'], row['lap1'], row['lap2'], row['lap3'], row['coins'],
                     row['shrooms'], row['character'], row['kart'], row['tires'], row['glider'], row['time'],
-                    row['video_url'], row['controller'], row['nation'], row['race'], row['cc']],
+                    row['videoURL'], row['controller'], row['nation'], row['race'], row['cc']],
                 (err: any, rows: Row[] | PromiseLike<Row[]>) => {
                     if (err) {
                         reject(err);
@@ -183,32 +177,15 @@ export default {
                 ORDER BY date ASC 
                 LIMIT 1`,
                 [decodeURI(raceName)],
-                (err: any, rows: { race_id: number | PromiseLike<number>; }[]) => {
+                (err: any, rows: { raceID: number | PromiseLike<number>; }[]) => {
                     if (err) {
                         reject(err);
                     }
-                    if (rows[0] && rows[0].race_id) {
-                        resolve(rows[0].race_id);
+                    if (rows[0] && rows[0].raceID) {
+                        resolve(rows[0].raceID);
                     } else {
                         reject("An error happened fetching raceID.")
                     }
-                }
-            )
-        })
-    },
-
-    async getAllEntriesByGame(game: string): Promise<Record[]> {
-        return new Promise<Record[]>((resolve, reject) => {
-            dbConn.all(
-                `SELECT * 
-                FROM ${game} 
-                ORDER BY date ASC`,
-                [],
-                (err: any, rows: Record[] | PromiseLike<Record[]>) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    resolve(rows);
                 }
             )
         })
@@ -257,7 +234,7 @@ export default {
                 `SELECT * 
                 FROM ${table} 
                 WHERE cc = '${cc}'
-                ORDER BY race_id, time`,
+                ORDER BY raceID, time`,
                 [], (err: any, rows: any) => {
                     if (err) {
                         reject(err)

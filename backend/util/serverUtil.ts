@@ -1,5 +1,6 @@
+import db from "../db/db";
+import { scrapeAllGames } from "./scrapeTools";
 import * as dotenv from 'dotenv';
-import {scrapeAllRacesByGame} from "./scrapeTools";
 dotenv.config();
 
 const getPortByEnvironment = (env: string | undefined): number => env === 'production'
@@ -20,16 +21,17 @@ const getPort = (): number => {
     return port;
 };
 
-export default function startServer(server: any) {
+export default async function startServer(server: any) {
+
+    // Assert all SQLite tests pass
+    await db.SQLiteTests();
+
     const port: number = getPort();
+
     server.listen(port, async () => {
         console.log(`Server is running on port ${port}! :'D `);
 
         // Scraping
-        await scrapeAllRacesByGame(
-            'mk8',
-            false,
-            1
-        );
+        //await scrapeAllGames();
     });
 };

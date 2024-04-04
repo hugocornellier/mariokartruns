@@ -7,6 +7,7 @@ import Home from "./Home";
 import ContentLayout from "./ContentLayout";
 import { Socket } from "socket.io-client";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { games } from '../utils/constants';
 
 interface RouteConfig {
     path: string;
@@ -31,8 +32,6 @@ const Router: React.FC<RouterProps> = ({ socket }) => {
             {React.cloneElement(component, { game, cc, socket })}
         </ContentLayout>
     );
-
-    const games = ['mk8dx', 'mk8', 'mk7', 'mkwii'];
 
     const routes: RouteConfig[] = [
         { path: "/", element: createRouteElement(<Home socket={socket} />, '') },

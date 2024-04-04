@@ -1,0 +1,1 @@
+export const games: string[] = ['mk8dx', 'mk8', 'mk7', 'mkwii'];

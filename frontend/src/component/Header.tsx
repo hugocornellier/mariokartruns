@@ -14,7 +14,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOnClick }) => {
             <Link to={"/"}>
                 <div className={"flex flex-row items-center cursor-pointer"}>
                     <img
-                        src={require('../img/logo.png')}
+                        src={require('../assets/img/logo.png')}
                         className="logo mr-3"
                         alt={"MarioKartRuns Logo"}
                     />

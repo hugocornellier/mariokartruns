@@ -44,9 +44,9 @@ const TrackListRow: React.FC<TableRowProps> = ({ record, game, cc }) => {
                 </Link>
             </td>
             <td data-label="Time">
-                {record.video_url !== "0"
+                {record.videoURL !== "0"
                     ? (
-                        <Link target="_blank" className="cursor-pointer" to={record.video_url}>
+                        <Link target="_blank" className="cursor-pointer" to={record.videoURL}>
                             {record.time}
                         </Link>
                     )
@@ -76,13 +76,13 @@ const AllRow: React.FC<{ record: any; cc: string; }> = ({ record, cc }) => {
             <td data-label="Race">
                 <Link to={`/${record.table_name}/${Util.prepareURL(record.race)}${record.cc === '200cc' ? '/200cc' : ''}`}>
                     {record.race}
-                    {(record.table_name == "mk8dx") && (" (" + record.cc + ")") }
+                    {(record.table_name === "mk8dx") && (" (" + record.cc + ")") }
                 </Link>
             </td>
             <td data-label="Time">
-                {record.video_url !== "0"
+                {record.videoURL !== "0"
                     ? (
-                        <Link target="_blank" className="cursor-pointer" to={record.video_url}>
+                        <Link target="_blank" className="cursor-pointer" to={record.videoURL}>
                             {record.time}
                         </Link>
                     )
@@ -102,15 +102,15 @@ const RacePageRow: React.FC<{ i: number; record: any; game: string; tableLabelCo
     return (
         <tr className={(Util.pageDirIsMK8OrMK8DX() && i === 0) || record.active_wr ? "gold-tr" : ""}>
             <td data-label="Crown">
-                {(Util.pageDirIsMK8OrMK8DX() && i === 0 || record.active_wr) && (
+                {((Util.pageDirIsMK8OrMK8DX() && i === 0) || record.active_wr) && (
                     <FontAwesomeIcon color="#9a8015" icon={faCrown} />
                 )}
-                {record.video_url !== "0" && <FontAwesomeIcon className="ml-1.5" icon={faVideoCamera} />}
+                {record.videoURL !== "0" && <FontAwesomeIcon className="ml-1.5" icon={faVideoCamera} />}
             </td>
             <td data-label="Time">
-                {record.video_url !== "0"
+                {record.videoURL !== "0"
                     ? (
-                        <Link target="_blank" className="cursor-pointer" to={record.video_url}>
+                        <Link target="_blank" className="cursor-pointer" to={record.videoURL}>
                             {record.time}
                         </Link>
                     )

@@ -39,7 +39,7 @@ export default (props: RaceTableProps): React.ReactElement | null => {
                 socket.on("get_player_data_ret", (data: RaceData[], records: any[]) => {
                     const updatedData = data.map((wr) => {
                         wr.active_wr = records.some(record => {
-                            return wr.video_url === record.video_url;
+                            return wr.videoURL === record.videoURL;
                         });
                         return wr;
                     });

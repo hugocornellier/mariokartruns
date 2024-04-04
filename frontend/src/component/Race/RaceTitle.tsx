@@ -10,20 +10,21 @@ const RaceTitle: React.FC<RaceTitleProps> = ({ game, raceName }) => {
 
     useEffect(() => {
         if (game !== undefined) {
-            setGameState(game.toString());
+            const gameStylized: string = game === 'mkwii' ? 'MKWii' : game.toUpperCase();
+            setGameState(gameStylized);
         }
     }, [game]);
 
     return (
         <div className="race-title text-black">
             <span
-                className={gameState + " game-id mr-5 rounded-md"}
+                className={gameState.toLowerCase() + " game-id mr-5 rounded-md"}
                 style={{
                     display: "inline-block",
                     padding: "5px 10px"
                 }}
             >
-                {gameState.toUpperCase()}
+                {gameState}
             </span>
             <span style={{ fontSize: "20px", display: "inline-block" }}>
                 {raceName.length > 0 ? raceName : "..."}

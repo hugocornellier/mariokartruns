@@ -1,5 +1,6 @@
 import fetch from "cross-fetch";
-import { parse as parseHtml, HTMLElement } from "node-html-parser";
+import { games } from "../../frontend/src/utils/constants";
+import { parse, HTMLElement } from "node-html-parser";
 import db from "../db/db";
 
 const removeYouTubeLinksFromArray = (a: string[]): string[] =>
@@ -43,7 +44,7 @@ interface RaceRecord {
     glider: string;
     controller: string;
     time: string;
-    video_url: string | number;
+    videoURL: string | number;
     nation: string | number;
 }
 
@@ -54,7 +55,7 @@ const getRaceRecords = async (raceURL: string, game: string, raceID: number): Pr
 
     try {
         const html: string = await fetchHTML(raceURL);
-        const htmlEl = parseHtml(html);
+        const htmlEl = parse(html);
         const race = htmlEl.querySelectorAll('h2')[0].textContent;
         const cup = raceURL.includes("&cup=") ? raceURL.split("&cup=")[1] : null;
         const cc = raceURL.includes("&m=200") ? "200cc" : "150cc";
@@ -92,16 +93,16 @@ const getRaceRecords = async (raceURL: string, game: string, raceID: number): Pr
                     : row.controller || '');
 
                 if (cellCount === 1) {
-                    const el = parseHtml(cell.innerHTML);
+                    const el = parse(cell.innerHTML);
                     const a_el = el.querySelector('a');
                     const img_el = el.querySelector('img');
                     const rawAttrs = a_el ? a_el.rawAttrs : null;
                     const rawAttrsImg = img_el ? img_el.rawAttrs : null;
                     row['time'] = cell.textContent.trim();
-                    row['video_url'] = rawAttrs ? rawAttrs.split('"')[1].trim() : 0;
+                    row['videoURL'] = rawAttrs ? rawAttrs.split('"')[1].trim() : 0;
                     row['controller'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : "default";
                 } else if (cellCount === nationCell) {
-                    const el = parseHtml(cell.innerHTML);
+                    const el = parse(cell.innerHTML);
                     const img_el = el.querySelector('img');
                     const rawAttrsImg = img_el ? img_el.rawAttrs : null;
                     row['nation'] = rawAttrsImg ? rawAttrsImg.split('"')[1].trim() : 0;
@@ -121,58 +122,78 @@ const getRaceRecords = async (raceURL: string, game: string, raceID: number): Pr
     }
 };
 
-export async function getAndInsertRecords(raceURL: string, table: string, raceID: number): Promise<void> {
-    try {
-        console.log("Fetching records at URL: " + raceURL);
+export async function getAndInsertRecords(raceURL: string, table: string, raceID: number): Promise<boolean> {
+    return new Promise(async (resolve) => {
+        try {
+            console.log("Fetching records at URL: " + raceURL);
 
-        // If raceID is null, determine it from the race name + getRaceIdByRaceName.
-        if (raceID === null) {
-            let raceName: string = raceURL.split("?track=")[1].split("+").join(' ').trim()
-            raceName = (raceName.endsWith('&m=200')) ? raceName.slice(0, -6) : raceName
-            raceID = await db.getRaceIdByRaceName(table, raceName)
-            if (!isNumber(raceID)) {
-                return;
+            // If raceID is null, determine it from the race name + getRaceIdByRaceName.
+            if (raceID === null) {
+                let raceName: string = raceURL.split("?track=")[1].split("+").join(' ').trim()
+                raceName = (raceName.endsWith('&m=200')) ? raceName.slice(0, -6) : raceName
+                raceID = await db.getRaceIdByRaceName(table, raceName)
+                if (!isNumber(raceID)) {
+                    return;
+                }
             }
-        }
 
-        const tableExists: boolean = await db.checkIfTableExists(table);
-        if (!tableExists) {
-            await db.createTable(table);
-        }
+            // Note to self: Despite running SQLTests on server init, these checks should stay.
+            // When scrapeAllRacesByGame is called with the deleteTable param set to true, a new table needs to be created.
+            const tableExists: boolean = await db.checkIfTableExists(table);
+            if (!tableExists) {
+                await db.createTable(table);
+            }
 
-        const rows: RaceRecord[] = await getRaceRecords(raceURL, table, raceID);
-        for (const row of rows) {
-            await db.insertEntry({...row}, table);
-        }
+            const rows: RaceRecord[] = await getRaceRecords(raceURL, table, raceID);
+            console.log(rows);
+            for (const row of rows) {
+                try {
+                    await db.insertEntry({ ...row }, table);
+                } catch (error) {
+                    console.error("Error inserting entry:", error);
+                }
+            }
 
-        console.log("Done inserting...");
-    } catch (error: any) {
-        throw new Error(error.message);
-    }
+            console.log("Done inserting...");
+            resolve(true);
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    });
 }
 
 export async function scrapeAllRacesByGame(game: string, deleteTable: boolean, startingRaceID: number): Promise<void> {
-    console.log("Scraping " + game)
+    console.log("Scraping " + game);
 
     if (deleteTable) {
-        await db.deleteTable(game)
+        await db.deleteTable(game);
     }
 
-    let raceID: number = game === 'mk8dx' ? 1.01 : 1
+    let raceID: number = game === 'mk8dx' ? 1.01 : 1;
     const raceUrls: string[] = await getRaceURLs(game);
-    console.log(raceUrls)
     for (const url of raceUrls) {
         if (raceID >= startingRaceID) {
-            await getAndInsertRecords(url, game, Math.floor(raceID))
+            await getAndInsertRecords(url, game, Math.floor(raceID));
         }
-        raceID = raceID + (game === 'mk8dx' ? 0.5 : 1)
+        raceID = raceID + (game === 'mk8dx' ? 0.5 : 1);
     }
 }
+
+export async function scrapeAllGames(): Promise<void> {
+    for (const game of games) {
+        await scrapeAllRacesByGame(
+            game,
+            false,
+            1
+        );
+    }
+}
+
 async function getMKWiiUrls(): Promise<string[]> {
     return new Promise(async (resolve) => {
-        const html = parseHtml(await fetchHTML('https://mkwrs.com/mkwii/'))
+        const html = parse(await fetchHTML('https://mkwrs.com/mkwii/'))
         const wrTables = html.querySelectorAll('.wr');
-        let raceURLs = []
+        let raceURLs: string[] = [];
         for (const wrTable of wrTables) {
             const tableRows = wrTable.querySelectorAll('tr').slice(1) // Remove header row
             for (const tableRow of tableRows) {
@@ -199,27 +220,23 @@ export async function getRaceURLs(game: string): Promise<string[]> {
         let raceURLs: string[] = [];
         const base_url: string = `https://mkwrs.com/${game}/`;
         const html: string = await fetchHTML(base_url);
-        if (!html)
-            reject("Error getting HTML.")
-        const tables = parseHtml(html).querySelectorAll('table')
-        const table_els = [tables[0], tables[1]]
-        for (const table of table_els) {
-            let tr_count = 0
-            for (const tr of table.querySelectorAll('tr')) {
-                const track_cell = tr.querySelectorAll('td')[0]
+        const tables: HTMLElement[] = parse(html).querySelectorAll('table');
+        for (const table of [tables[0], tables[1]]) {
+            const tableRows: HTMLElement[] = table.querySelectorAll('tr');
+            for (const tr of tableRows) {
+                const track_cell = tr.querySelectorAll('td')[0];
                 if (track_cell) {
-                    const a_el = track_cell.querySelector('a')
+                    const a_el = track_cell.querySelector('a');
                     if (a_el) {
                         let cup = null;
                         if (a_el.innerHTML.includes('src="cups/')) {
-                            let cup_data = a_el.innerHTML.split('src="cups/')[1].trim()
-                            cup_data = cup_data.split(".webp")[0].trim()
-                            const cup_first_letter_capitalized = cup_data.charAt(0).toUpperCase() + cup_data.slice(1)
-                            cup = cup_first_letter_capitalized + ' '
+                            let cup_data: string = a_el.innerHTML.split('src="cups/')[1].trim();
+                            cup_data = cup_data.split(".webp")[0].trim();
+                            const cup_first_letter_capitalized = cup_data.charAt(0).toUpperCase() + cup_data.slice(1);
+                            cup = cup_first_letter_capitalized + ' ';
                         }
-                        console.log(cup)
-                        const raceURL = base_url + a_el.rawAttrs.split('"')[1].trim() + "&cup=" + cup
-                        raceURLs.push(raceURL)
+                        const raceURL: string = base_url + a_el.rawAttrs.split('"')[1].trim() + "&cup=" + cup;
+                        raceURLs.push(raceURL);
                     }
                 }
             }
