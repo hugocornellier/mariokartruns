@@ -24,7 +24,9 @@ const getPort = (): number => {
 export default async function startServer(server: any) {
 
     // Assert all SQLite tests pass
+    console.log("Testing SQL...")
     await db.SQLiteTests();
+    console.log("Done testing SQL...")
 
     const port: number = getPort();
 

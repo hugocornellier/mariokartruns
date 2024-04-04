@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
-import { SocketHelper } from "./context/SocketHelper";
+import { SocketHelper } from "./utils/SocketHelper";
 import Router from "./component/Router";
 
 function App() {
@@ -9,10 +9,9 @@ function App() {
     useEffect(() => {
         const initializedSocket: Socket = SocketHelper.init();
         setSocket(initializedSocket);
-
         return () => {
-            if (socket) {
-                socket.off();
+            if (initializedSocket) {
+                initializedSocket.off();
             }
         };
     }, []);

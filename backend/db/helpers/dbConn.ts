@@ -1,7 +1,7 @@
 import { join } from "path";
 import { Database } from "sqlite3";
 
-const dbFilePath: string = join(__dirname, "../records.db");
+const dbFilePath: string = join(__dirname, "../data/records.db");
 
 const createDbConnection = (): Database => {
     return new Database(dbFilePath, (err: Error | null): void => {
