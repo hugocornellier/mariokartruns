@@ -7,7 +7,7 @@
     "start": "tsc backend/server.ts && node backend/server.js",
     "dev": "tsc backend/server.ts && node backend/server.js",
     "server": "tsc backend/server.ts && node backend/server.js",
-    "build": "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix frontend && npm run build --prefix frontend"
+    "build": "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix frontend && tsc backend/server.ts && npm run build --prefix frontend"
   },
   "keywords": [
     "mkrecords",

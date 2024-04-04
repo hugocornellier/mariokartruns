@@ -3,9 +3,10 @@ import { scrapeAllGames } from "./scrapeTools";
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const getPortByEnvironment = (env: string | undefined): number => env === 'production'
-    ? getDotEnvPropAsNumber('PROD_PORT')
-    : getDotEnvPropAsNumber('DEV_PORT');
+const getPortByEnvironment = (env: string | undefined): number =>
+    env === 'production'
+        ? getDotEnvPropAsNumber('PROD_PORT')
+        : getDotEnvPropAsNumber('DEV_PORT');
 
 const getDotEnvPropAsNumber = (property: string): number => {
     const propertyVal: string | undefined = process.env[property];
@@ -21,12 +22,10 @@ const getPort = (): number => {
     return port;
 };
 
-export default async function startServer(server: any) {
+const startServer = async (server: any) => {
 
     // Assert all SQLite tests pass
-    console.log("Testing SQL...")
     await db.SQLiteTests();
-    console.log("Done testing SQL...")
 
     const port: number = getPort();
 
@@ -37,3 +36,4 @@ export default async function startServer(server: any) {
         //await scrapeAllGames();
     });
 };
+export default startServer;
